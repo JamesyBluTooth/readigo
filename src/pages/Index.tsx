@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
+import { Dashboard } from "./Dashboard";
 import { Books } from "./Books";
+import { TabLink } from "@/components/TabLink";
+import { Button } from "@/components/ui/button";
+import { LogOut, BookMarked } from "lucide-react";
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"dashboard" | "books">("dashboard");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -22,6 +27,10 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -33,7 +42,45 @@ const Index = () => {
     );
   }
 
-  return session ? <Books /> : <AuthPage />;
+  if (!session) {
+    return <AuthPage />;
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b bg-card shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                <BookMarked className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <h1 className="text-2xl font-bold text-foreground">Bookmarked</h1>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-6">
+        <nav className="flex gap-2 mb-6">
+          <TabLink active={activeTab === "dashboard"} onClick={() => setActiveTab("dashboard")}>
+            Dashboard
+          </TabLink>
+          <TabLink active={activeTab === "books"} onClick={() => setActiveTab("books")}>
+            Books
+          </TabLink>
+        </nav>
+
+        <main>
+          {activeTab === "dashboard" ? <Dashboard /> : <Books />}
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default Index;

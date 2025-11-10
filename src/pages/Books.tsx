@@ -3,8 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AddBookForm } from "@/components/books/AddBookForm";
 import { BookCard } from "@/components/books/BookCard";
 import { BookDetail } from "@/components/books/BookDetail";
-import { Button } from "@/components/ui/button";
-import { LogOut, BookMarked } from "lucide-react";
+import { BookMarked } from "lucide-react";
 
 interface Book {
   id: string;
@@ -40,30 +39,8 @@ export const Books = () => {
     setLoading(false);
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-                <BookMarked className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <h1 className="text-2xl font-bold text-foreground">Bookmarked</h1>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
+    <div className="space-y-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground">Add a Book</h2>
@@ -98,7 +75,6 @@ export const Books = () => {
             )}
           </div>
         </div>
-      </main>
 
       {selectedBookId && (
         <BookDetail
