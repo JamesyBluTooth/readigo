@@ -119,7 +119,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
       .from("books")
       .update({
         is_completed: false,
-        current_page: Math.max(0, book.total_pages - 1),
+        current_page: Math.floor(book.total_pages * 0.99),
         rating: null,
         review: null,
       })
