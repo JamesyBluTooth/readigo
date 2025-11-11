@@ -65,6 +65,42 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_challenges: {
+        Row: {
+          challenge_date: string
+          challenge_type: string
+          created_at: string
+          current_progress: number
+          expires_at: string
+          id: string
+          is_completed: boolean
+          target_value: number
+          user_id: string
+        }
+        Insert: {
+          challenge_date?: string
+          challenge_type: string
+          created_at?: string
+          current_progress?: number
+          expires_at: string
+          id?: string
+          is_completed?: boolean
+          target_value: number
+          user_id: string
+        }
+        Update: {
+          challenge_date?: string
+          challenge_type?: string
+          created_at?: string
+          current_progress?: number
+          expires_at?: string
+          id?: string
+          is_completed?: boolean
+          target_value?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           book_id: string
@@ -158,7 +194,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_daily_challenge: { Args: { p_user_id: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
