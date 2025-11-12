@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          achievement_type: string
+          earned_at: string
+          id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          achievement_type: string
+          earned_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          achievement_type?: string
+          earned_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       books: {
         Row: {
           author: string | null
@@ -101,6 +133,42 @@ export type Database = {
         }
         Relationships: []
       }
+      friendships: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "friendships_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           book_id: string
@@ -135,6 +203,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           display_name: string | null
+          friend_code: string
           id: string
           updated_at: string
           user_id: string
@@ -143,6 +212,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          friend_code: string
           id?: string
           updated_at?: string
           user_id: string
@@ -151,6 +221,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          friend_code?: string
           id?: string
           updated_at?: string
           user_id?: string
@@ -189,12 +260,54 @@ export type Database = {
           },
         ]
       }
+      reading_stats: {
+        Row: {
+          books_completed: number
+          created_at: string
+          id: string
+          total_minutes: number
+          total_pages: number
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          books_completed?: number
+          created_at?: string
+          id?: string
+          total_minutes?: number
+          total_pages?: number
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          books_completed?: number
+          created_at?: string
+          id?: string
+          total_minutes?: number
+          total_pages?: number
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       generate_daily_challenge: { Args: { p_user_id: string }; Returns: string }
+      generate_friend_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never

@@ -1,9 +1,9 @@
-import { BookMarked, Home, Library, User, Settings, Trophy } from "lucide-react";
+import { BookMarked, Home, Library, User, Settings, Trophy, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
-  activeTab: "dashboard" | "books" | "profile" | "challenge-history";
-  onTabChange: (tab: "dashboard" | "books" | "profile" | "challenge-history") => void;
+  activeTab: "dashboard" | "books" | "profile" | "challenge-history" | "social";
+  onTabChange: (tab: "dashboard" | "books" | "profile" | "challenge-history" | "social") => void;
 }
 
 export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
@@ -54,6 +54,19 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         >
           <Trophy className="w-5 h-5" />
           <span className="font-medium">Challenges</span>
+        </button>
+
+        <button
+          onClick={() => onTabChange("social")}
+          className={cn(
+            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+            activeTab === "social"
+              ? "bg-muted text-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          )}
+        >
+          <Users className="w-5 h-5" />
+          <span className="font-medium">Friends</span>
         </button>
 
         <button

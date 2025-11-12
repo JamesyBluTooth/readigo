@@ -1,9 +1,9 @@
-import { Home, Library, User, Trophy } from "lucide-react";
+import { Home, Library, User, Trophy, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MobileNavProps {
-  activeTab: "dashboard" | "books" | "profile" | "challenge-history";
-  onTabChange: (tab: "dashboard" | "books" | "profile" | "challenge-history") => void;
+  activeTab: "dashboard" | "books" | "profile" | "challenge-history" | "social";
+  onTabChange: (tab: "dashboard" | "books" | "profile" | "challenge-history" | "social") => void;
   onSignOut: () => void;
 }
 
@@ -42,6 +42,17 @@ export const MobileNav = ({ activeTab, onTabChange, onSignOut }: MobileNavProps)
         >
           <Trophy className="w-6 h-6" />
           <span className="text-xs font-medium">Challenges</span>
+        </button>
+
+        <button
+          onClick={() => onTabChange("social")}
+          className={cn(
+            "flex flex-col items-center gap-1 transition-colors",
+            activeTab === "social" ? "text-primary" : "text-muted-foreground"
+          )}
+        >
+          <Users className="w-6 h-6" />
+          <span className="text-xs font-medium">Friends</span>
         </button>
 
         <button

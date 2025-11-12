@@ -37,10 +37,15 @@ export default function Profile() {
         .single();
 
       if (error) {
-        // Profile doesn't exist yet, create one
+        // Profile doesn't exist yet, create one with a friend code
+        const { data: friendCode } = await supabase.rpc("generate_friend_code");
+        
         const { data: newProfile, error: insertError } = await supabase
           .from("profiles")
-          .insert({ user_id: user.id })
+          .insert({ 
+            user_id: user.id,
+            friend_code: friendCode || ""
+          })
           .select()
           .single();
 

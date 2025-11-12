@@ -5,6 +5,7 @@ import { Dashboard } from "./Dashboard";
 import { Books } from "./Books";
 import Profile from "./Profile";
 import ChallengeHistory from "./ChallengeHistory";
+import { Social } from "./Social";
 import { Sidebar } from "@/components/Sidebar";
 import { RightPanel } from "@/components/RightPanel";
 import { MobileNav } from "@/components/MobileNav";
@@ -14,7 +15,7 @@ import { FriendFeed } from "@/components/dashboard/FriendFeed";
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "books" | "profile" | "challenge-history">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "books" | "profile" | "challenge-history" | "social">("dashboard");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -59,6 +60,7 @@ const Index = () => {
           {activeTab === "dashboard" && <Dashboard />}
           {activeTab === "books" && <Books />}
           {activeTab === "challenge-history" && <ChallengeHistory />}
+          {activeTab === "social" && <Social />}
           {activeTab === "profile" && <Profile />}
         </div>
 
