@@ -11,6 +11,7 @@ import { RightPanel } from "@/components/RightPanel";
 import { MobileNav } from "@/components/MobileNav";
 import { DailyChallenge } from "@/components/dashboard/DailyChallenge";
 import { FriendFeed } from "@/components/dashboard/FriendFeed";
+import { SplashScreen } from "@/components/SplashScreen";
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
@@ -37,14 +38,7 @@ const Index = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
+    return <SplashScreen />;
   }
 
   if (!session) {
@@ -53,7 +47,7 @@ const Index = () => {
 
   return (
     <div className="flex min-h-screen w-full bg-background overflow-hidden">
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} onSignOut={handleSignOut} />
 
       <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
         <div className="container mx-auto px-4 py-6 lg:py-8 max-w-6xl">

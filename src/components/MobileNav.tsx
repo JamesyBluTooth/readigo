@@ -1,4 +1,4 @@
-import { Home, Library, User, Trophy, Users } from "lucide-react";
+import { Home, Library, User, Trophy, Users, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MobileNavProps {
@@ -64,6 +64,14 @@ export const MobileNav = ({ activeTab, onTabChange, onSignOut }: MobileNavProps)
         >
           <User className="w-6 h-6" />
           <span className="text-xs font-medium">Profile</span>
+        </button>
+
+        <button
+          onClick={onSignOut}
+          className="flex flex-col items-center gap-1 transition-colors text-destructive"
+        >
+          <LogOut className="w-6 h-6" />
+          <span className="text-xs font-medium">Logout</span>
         </button>
       </div>
     </nav>

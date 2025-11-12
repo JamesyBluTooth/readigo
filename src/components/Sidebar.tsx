@@ -1,14 +1,15 @@
-import { BookMarked, Home, Library, User, Settings, Trophy, Users } from "lucide-react";
+import { BookMarked, Home, Library, User, Settings, Trophy, Users, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
   activeTab: "dashboard" | "books" | "profile" | "challenge-history" | "social";
   onTabChange: (tab: "dashboard" | "books" | "profile" | "challenge-history" | "social") => void;
+  onSignOut: () => void;
 }
 
-export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
+export const Sidebar = ({ activeTab, onTabChange, onSignOut }: SidebarProps) => {
   return (
-    <aside className="hidden lg:flex flex-col w-[220px] bg-card border-r border-border p-4">
+    <aside className="hidden lg:flex flex-col w-[220px] bg-card border-r border-border p-4 justify-between">
       <div className="flex items-center gap-2 mb-8 px-2">
         <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
           <BookMarked className="w-6 h-6 text-primary-foreground" />
@@ -89,6 +90,14 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
           <span className="font-medium">Settings</span>
         </button>
       </nav>
+
+      <button
+        onClick={onSignOut}
+        className="flex items-center gap-3 px-4 py-3 rounded-xl text-destructive hover:bg-destructive/10 transition-all mt-4"
+      >
+        <LogOut className="w-5 h-5" />
+        <span className="font-medium">Log Out</span>
+      </button>
     </aside>
   );
 };
