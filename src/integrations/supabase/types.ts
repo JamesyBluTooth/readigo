@@ -314,6 +314,7 @@ export type Database = {
         }
         Returns: string
       }
+      ensure_reading_stats_for_week: { Args: never; Returns: undefined }
       generate_daily_challenge: { Args: { p_user_id: string }; Returns: string }
       generate_friend_code: { Args: never; Returns: string }
     }

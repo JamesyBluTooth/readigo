@@ -38,6 +38,9 @@ export const LeaderboardView = () => {
       monday.setHours(0, 0, 0, 0);
       const weekStart = monday.toISOString().split('T')[0];
 
+      // Ensure current user has stats for this week
+      await supabase.rpc('ensure_reading_stats_for_week');
+
       // Get all friendships
       const { data: friendships } = await supabase
         .from("friendships")
@@ -47,7 +50,7 @@ export const LeaderboardView = () => {
       const friendIds = friendships?.map(f => f.following_id) || [];
       const allUserIds = [...friendIds, user.id];
 
-      // Get or create stats for all users
+      // Get stats for all users (only those that exist)
       const { data: stats, error: statsError } = await supabase
         .from("reading_stats")
         .select("*")
@@ -55,35 +58,6 @@ export const LeaderboardView = () => {
         .eq("week_start", weekStart);
 
       if (statsError) throw statsError;
-
-      // Create stats for users who don't have them yet
-      const existingUserIds = stats?.map(s => s.user_id) || [];
-      const missingUserIds = allUserIds.filter(id => !existingUserIds.includes(id));
-
-      if (missingUserIds.length > 0) {
-        await Promise.all(
-          missingUserIds.map(userId =>
-            supabase.from("reading_stats").insert({
-              user_id: userId,
-              week_start: weekStart,
-              total_minutes: 0,
-              total_pages: 0,
-              books_completed: 0
-            })
-          )
-        );
-
-        // Reload stats
-        const { data: updatedStats } = await supabase
-          .from("reading_stats")
-          .select("*")
-          .in("user_id", allUserIds)
-          .eq("week_start", weekStart);
-
-        if (updatedStats) {
-          stats.push(...updatedStats.filter(s => missingUserIds.includes(s.user_id)));
-        }
-      }
 
       // Get profiles for all users
       const { data: profiles } = await supabase
