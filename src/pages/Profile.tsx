@@ -77,10 +77,23 @@ export default function Profile() {
       }
 
       const file = event.target.files[0];
+      
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed.');
+      }
+      
+      // Validate file size (5MB max)
+      const MAX_FILE_SIZE = 5 * 1024 * 1024;
+      if (file.size > MAX_FILE_SIZE) {
+        throw new Error('File size must be less than 5MB.');
+      }
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const fileExt = file.name.split(".").pop();
+      const fileExt = file.type.split('/')[1] || 'jpg';
       const filePath = `${user.id}/avatar.${fileExt}`;
 
       // Delete old avatar if exists

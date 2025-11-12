@@ -30,10 +30,13 @@ export const AuthPage = () => {
           description: "You've successfully signed in.",
         });
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
         if (error) throw error;
         toast({
           title: "Account created!",
