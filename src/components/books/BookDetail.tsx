@@ -115,6 +115,17 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
   const handleMarkIncomplete = async () => {
     if (!book) return;
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!profile) return;
+
     const { error: updateError } = await supabase
       .from("books")
       .update({
@@ -134,6 +145,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
       .from("notes")
       .insert({
         book_id: bookId,
+        user_id: profile.user_id,
         content: "Marked incomplete",
       });
 

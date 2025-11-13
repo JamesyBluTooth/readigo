@@ -28,10 +28,22 @@ export const AddNoteModal = ({
     setLoading(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!profile) throw new Error("Profile not found");
+
       const { error } = await supabase
         .from("notes")
         .insert({
           book_id: bookId,
+          user_id: profile.user_id,
           content: note,
         });
 
