@@ -45,6 +45,17 @@ export const UpdateProgressModal = ({
         return;
       }
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!profile) throw new Error("Profile not found");
+
       const newCurrentPage = Math.min(currentPage + pages, totalPages);
 
       // Insert progress entry
@@ -52,6 +63,7 @@ export const UpdateProgressModal = ({
         .from("progress_entries")
         .insert({
           book_id: bookId,
+          user_id: profile.user_id,
           pages_read: pages,
           time_spent_minutes: minutes,
         });
