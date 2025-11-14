@@ -1,6 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BookOpen, Check, Pencil } from "lucide-react";
+import { useState } from "react";
+import { EditBookModal } from "./EditBookModal";
+import { mergeBookWithLocal } from "@/lib/localBookCache";
 
 interface BookCardProps {
   id: string;
@@ -14,6 +18,7 @@ interface BookCardProps {
 }
 
 export const BookCard = ({
+  id,
   title,
   author,
   coverUrl,
@@ -22,38 +27,69 @@ export const BookCard = ({
   isCompleted,
   onClick,
 }: BookCardProps) => {
-  const progress = totalPages > 0 ? (currentPage / totalPages) * 100 : 0;
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  
+  // Apply local overrides
+  const displayData = mergeBookWithLocal({
+    id,
+    title,
+    author,
+    total_pages: totalPages,
+  });
+  
+  const progress = displayData.total_pages > 0 ? (currentPage / displayData.total_pages) * 100 : 0;
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowEditModal(true);
+  };
+
+  const handleSave = () => {
+    setRefreshKey(prev => prev + 1);
+  };
 
   return (
-    <Card 
-      className="cursor-pointer hover:shadow-[var(--shadow-hover)] transition-all duration-300 group overflow-hidden animate-scale-in"
-      onClick={onClick}
-    >
-      <CardContent className="p-4">
-        <div className="flex gap-4">
-          <div className="w-24 h-32 bg-muted rounded-lg overflow-hidden flex-shrink-0 shadow-md">
-            {coverUrl ? (
-              <img
-                src={coverUrl}
-                alt={title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-                <BookOpen className="w-8 h-8 text-muted-foreground" />
+    <>
+      <Card 
+        className="cursor-pointer hover:shadow-[var(--shadow-hover)] transition-all duration-300 group overflow-hidden animate-scale-in"
+        onClick={onClick}
+      >
+        <CardContent className="p-4">
+          <div className="flex gap-4">
+            <div className="w-24 h-32 bg-muted rounded-lg overflow-hidden flex-shrink-0 shadow-md">
+              {coverUrl ? (
+                <img
+                  src={coverUrl}
+                  alt={displayData.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+                  <BookOpen className="w-8 h-8 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h3 className="font-semibold text-lg text-foreground line-clamp-2 flex-1">
+                  {displayData.title}
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={handleEditClick}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
               </div>
-            )}
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-foreground line-clamp-2 mb-1">
-              {title}
-            </h3>
-            {author && (
-              <p className="text-sm text-muted-foreground mb-3 line-clamp-1">
-                {author}
-              </p>
-            )}
+              {displayData.author && (
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-1">
+                  {displayData.author}
+                </p>
+              )}
             
             <div className="space-y-2">
               {isCompleted ? (
@@ -66,7 +102,7 @@ export const BookCard = ({
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Progress</span>
                     <span className="font-medium text-foreground">
-                      {currentPage} / {totalPages} pages
+                      {currentPage} / {displayData.total_pages} pages
                     </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
@@ -85,5 +121,18 @@ export const BookCard = ({
         </div>
       </CardContent>
     </Card>
+
+    <EditBookModal
+      bookId={id}
+      currentData={{
+        title,
+        author,
+        total_pages: totalPages,
+      }}
+      open={showEditModal}
+      onOpenChange={setShowEditModal}
+      onSave={handleSave}
+    />
+    </>
   );
 };

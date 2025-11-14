@@ -3,12 +3,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, Clock, FileText, Star, CheckCircle2 } from "lucide-react";
+import { BookOpen, Clock, FileText, Star, CheckCircle2, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { UpdateProgressModal } from "./UpdateProgressModal";
 import { AddNoteModal } from "./AddNoteModal";
 import { CompleteBookModal } from "./CompleteBookModal";
 import { TimelineItem } from "./TimelineItem";
+import { EditBookModal } from "./EditBookModal";
+import { mergeBookWithLocal } from "@/lib/localBookCache";
 
 interface BookDetailProps {
   bookId: string;
@@ -47,13 +49,15 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (open && bookId) {
       fetchBookDetails();
       fetchTimeline();
     }
-  }, [open, bookId]);
+  }, [open, bookId, refreshKey]);
 
   const fetchBookDetails = async () => {
     const { data, error } = await supabase
@@ -67,7 +71,9 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
       return;
     }
 
-    setBook(data);
+    // Apply local overrides
+    const mergedData = mergeBookWithLocal(data);
+    setBook(mergedData);
   };
 
   const fetchTimeline = async () => {
@@ -165,7 +171,17 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle className="text-2xl">{book.title}</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-2xl">{book.title}</DialogTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowEditModal(true)}
+              >
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit Details
+              </Button>
+            </div>
           </DialogHeader>
 
           <div className="flex gap-6 pb-4 border-b">
@@ -307,6 +323,21 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
           fetchBookDetails();
           fetchTimeline();
           onUpdate();
+        }}
+      />
+
+      <EditBookModal
+        bookId={bookId}
+        currentData={{
+          title: book.title,
+          author: book.author,
+          total_pages: book.total_pages,
+          genres: book.genres,
+        }}
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        onSave={() => {
+          setRefreshKey(prev => prev + 1);
         }}
       />
     </>
