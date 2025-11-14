@@ -1,4 +1,4 @@
-import { useState } from "react";
+ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,7 @@ export const BookSetupStep = ({ onBookAdded }: BookSetupStepProps) => {
 
     try {
       const bookData = await fetchBookByISBN(isbn);
+      Alert.alert("Error with Google Books");
 
       if (!bookData) {
         toast({
