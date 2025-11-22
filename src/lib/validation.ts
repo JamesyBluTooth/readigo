@@ -24,3 +24,18 @@ export const reviewSchema = z.object({
     .max(2000, 'Review must be less than 2000 characters')
     .optional()
 });
+
+export const bookSchema = z.object({
+  title: z.string()
+    .trim()
+    .min(1, 'Title is required')
+    .max(500, 'Title must be less than 500 characters'),
+  author: z.string()
+    .trim()
+    .max(200, 'Author must be less than 200 characters')
+    .optional(),
+  total_pages: z.number()
+    .positive('Page count must be positive')
+    .nullable()
+    .optional()
+});

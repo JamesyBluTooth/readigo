@@ -38,6 +38,9 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
         throw new Error("User not authenticated");
       }
 
+      const totalPages = (bookData.pageCount && bookData.pageCount > 0) ? bookData.pageCount : null;
+      const hasIncompleteData = !totalPages || !bookData.authors?.length;
+
       const { error } = await supabase.from("books").insert({
         user_id: user.id,
         isbn: isbn,
@@ -45,15 +48,22 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
         author: bookData.authors?.join(", "),
         genres: bookData.categories || [],
         cover_url: bookData.imageLinks?.thumbnail?.replace('http:', 'https:'),
-        total_pages: bookData.pageCount || 0,
+        total_pages: totalPages,
       });
 
       if (error) throw error;
 
-      toast({
-        title: "Book added!",
-        description: `${bookData.title} has been added to your collection.`,
-      });
+      if (hasIncompleteData) {
+        toast({
+          title: "Book added with incomplete data",
+          description: "Some details are missing from Google Books. You can edit them in the book details.",
+        });
+      } else {
+        toast({
+          title: "Book added!",
+          description: `${bookData.title} has been added to your collection.`,
+        });
+      }
 
       setIsbn("");
       onBookAdded();

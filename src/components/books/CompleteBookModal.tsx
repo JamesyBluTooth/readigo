@@ -41,11 +41,14 @@ export const CompleteBookModal = ({
         }
       }
 
+      // Use totalPages if available, otherwise mark complete without page tracking
+      const completedPage = (totalPages && totalPages > 0) ? totalPages : null;
+
       const { error } = await supabase
         .from("books")
         .update({
           is_completed: true,
-          current_page: totalPages,
+          current_page: completedPage,
           rating: rating > 0 ? rating : null,
           review: review.trim() || null,
         })
