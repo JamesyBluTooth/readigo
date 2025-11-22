@@ -84,6 +84,42 @@ All colors MUST be HSL.
     --input: 240 3.7% 20%;
     --ring: 243 75% 59%;
   }
+
+  .bookish {
+    --background: 45 30% 92%;
+    --foreground: 30 25% 20%;
+
+    --card: 40 35% 96%;
+    --card-foreground: 30 25% 20%;
+
+    --popover: 40 35% 96%;
+    --popover-foreground: 30 25% 20%;
+
+    --primary: 25 75% 47%;
+    --primary-foreground: 40 35% 96%;
+
+    --secondary: 35 40% 65%;
+    --secondary-foreground: 30 25% 20%;
+
+    --muted: 40 20% 85%;
+    --muted-foreground: 30 15% 40%;
+
+    --accent: 35 55% 60%;
+    --accent-foreground: 30 25% 20%;
+
+    --success: 142 50% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 40 35% 96%;
+
+    --border: 35 20% 80%;
+    --input: 35 20% 80%;
+    --ring: 25 75% 47%;
+  }
 }
 
 @layer base {

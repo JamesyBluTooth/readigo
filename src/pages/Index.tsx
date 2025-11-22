@@ -45,12 +45,17 @@ const Index = () => {
       try {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("onboarding_completed")
+          .select("onboarding_completed, theme_preference")
           .eq("user_id", session.user.id)
           .single();
 
         if (!cancelled) {
           setShowOnboarding(!profile?.onboarding_completed);
+          
+          // Apply theme preference
+          if (profile?.theme_preference) {
+            applyTheme(profile.theme_preference);
+          }
         }
       } catch {
         if (!cancelled) {
@@ -65,6 +70,31 @@ const Index = () => {
       cancelled = true;
     };
   }, [session?.user]);
+
+  // Theme application logic
+  useEffect(() => {
+    const applySystemTheme = () => {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.remove('light', 'dark', 'bookish');
+      document.documentElement.classList.add(isDark ? 'dark' : 'light');
+    };
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', applySystemTheme);
+
+    return () => mediaQuery.removeEventListener('change', applySystemTheme);
+  }, []);
+
+  const applyTheme = (theme: string) => {
+    document.documentElement.classList.remove('light', 'dark', 'bookish');
+    
+    if (theme === 'system') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.add(isDark ? 'dark' : 'light');
+    } else {
+      document.documentElement.classList.add(theme);
+    }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

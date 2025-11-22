@@ -309,6 +309,10 @@ export default function Settings() {
               onValueChange={(value) => updatePreference("theme_preference", value)}
             >
               <div className="flex items-center space-x-2">
+                <RadioGroupItem value="system" id="system" />
+                <Label htmlFor="system">System Default</Label>
+              </div>
+              <div className="flex items-center space-x-2">
                 <RadioGroupItem value="light" id="light" />
                 <Label htmlFor="light">Light</Label>
               </div>
