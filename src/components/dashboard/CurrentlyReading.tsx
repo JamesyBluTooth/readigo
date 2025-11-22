@@ -34,7 +34,7 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
     );
   }
 
-  const progress = (book.current_page / book.total_pages) * 100;
+  const progress = book.total_pages && book.total_pages > 0 ? (book.current_page / book.total_pages) * 100 : 0;
 
   return (
     <Card className="animate-fade-in">
@@ -59,13 +59,21 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
               <p className="text-sm text-muted-foreground">{book.author}</p>
             )}
             <div className="space-y-1">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  {book.current_page} / {book.total_pages} pages
-                </span>
-                <span className="font-medium text-primary">{Math.round(progress)}%</span>
-              </div>
-              <Progress value={progress} className="h-2" />
+              {book.total_pages && book.total_pages > 0 ? (
+                <>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {book.current_page} / {book.total_pages} pages
+                    </span>
+                    <span className="font-medium text-primary">{Math.round(progress)}%</span>
+                  </div>
+                  <Progress value={progress} className="h-2" />
+                </>
+              ) : (
+                <div className="text-sm text-amber-600 dark:text-amber-500">
+                  ⚠️ Page count unknown
+                </div>
+              )}
             </div>
           </div>
         </div>

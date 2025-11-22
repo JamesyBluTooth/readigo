@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BookOpen, Clock, FileText, Star, CheckCircle2, Pencil } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { UpdateProgressModal } from "./UpdateProgressModal";
 import { AddNoteModal } from "./AddNoteModal";
@@ -51,6 +52,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (open && bookId) {
@@ -216,7 +218,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
 
               <div className="flex items-center gap-2 text-muted-foreground">
                 <BookOpen className="w-4 h-4" />
-                <span>{book.total_pages} pages</span>
+                <span>{book.total_pages ? `${book.total_pages} pages` : 'Page count unknown'}</span>
               </div>
 
               {book.is_completed ? (
@@ -232,7 +234,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
                     </div>
                   )}
                 </div>
-              ) : (
+              ) : book.total_pages && book.total_pages > 0 ? (
                 <div className="space-y-2">
                   <div className="text-sm text-muted-foreground">
                     Page {book.current_page} of {book.total_pages}
@@ -246,6 +248,10 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
                     />
                   </div>
                 </div>
+              ) : (
+                <div className="text-sm text-amber-600 dark:text-amber-500">
+                  ⚠️ Page count unknown - Add missing details below
+                </div>
               )}
             </div>
           </div>
@@ -253,7 +259,21 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
           <div className="flex gap-2 pb-4">
             {!book.is_completed ? (
               <>
-                <Button onClick={() => setShowProgressModal(true)} className="flex-1">
+                <Button 
+                  onClick={() => {
+                    if (!book.total_pages || book.total_pages === 0) {
+                      toast({
+                        title: "Missing page count",
+                        description: "Please add the total page count first using the Edit Details button.",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    setShowProgressModal(true);
+                  }} 
+                  className="flex-1"
+                  disabled={!book.total_pages || book.total_pages === 0}
+                >
                   <Clock className="w-4 h-4 mr-2" />
                   Update Progress
                 </Button>

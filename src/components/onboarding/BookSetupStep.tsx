@@ -39,6 +39,8 @@ export const BookSetupStep = ({ onBookAdded }: BookSetupStepProps) => {
         throw new Error("User not authenticated");
       }
 
+      const totalPages = (bookData.pageCount && bookData.pageCount > 0) ? bookData.pageCount : null;
+
       const { error } = await supabase.from("books").insert({
         user_id: user.id,
         isbn: isbn,
@@ -46,7 +48,7 @@ export const BookSetupStep = ({ onBookAdded }: BookSetupStepProps) => {
         author: bookData.authors?.join(", "),
         genres: bookData.categories || [],
         cover_url: bookData.imageLinks?.thumbnail?.replace("http:", "https:"),
-        total_pages: bookData.pageCount || 0,
+        total_pages: totalPages,
       });
 
       if (error) throw error;

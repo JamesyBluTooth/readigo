@@ -56,6 +56,15 @@ export const UpdateProgressModal = ({
 
       if (!profile) throw new Error("Profile not found");
 
+      if (!totalPages || totalPages === 0) {
+        toast({
+          title: "Missing page count",
+          description: "Please add the total page count for this book first.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const newCurrentPage = Math.min(currentPage + pages, totalPages);
 
       // Insert progress entry

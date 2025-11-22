@@ -38,7 +38,7 @@ export const BookCard = ({
     total_pages: totalPages,
   });
   
-  const progress = displayData.total_pages > 0 ? (currentPage / displayData.total_pages) * 100 : 0;
+  const progress = displayData.total_pages && displayData.total_pages > 0 ? (currentPage / displayData.total_pages) * 100 : 0;
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -97,6 +97,10 @@ export const BookCard = ({
                   <Check className="w-3 h-3 mr-1" />
                   Completed
                 </Badge>
+              ) : displayData.total_pages === null || displayData.total_pages === 0 ? (
+                <div className="text-sm text-amber-600 dark:text-amber-500">
+                  ⚠️ Page count unknown - <button onClick={handleEditClick} className="underline">add details</button>
+                </div>
               ) : (
                 <>
                   <div className="flex items-center justify-between text-sm">
