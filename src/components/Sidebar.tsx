@@ -9,7 +9,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ activeTab, onTabChange, onSignOut }: SidebarProps) => {
   return (
-    <aside className="hidden lg:flex flex-col w-[220px] bg-card border-r border-border p-4 justify-between">
+    <aside className="hidden lg:flex flex-col w-[220px] h-screen bg-card border-r border-border p-4 justify-between overflow-hidden">
       <div className="flex items-center gap-2 mb-8 px-2">
         <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
           <BookMarked className="w-6 h-6 text-primary-foreground" />
