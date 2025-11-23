@@ -23,19 +23,17 @@ export default function AvatarCustomization() {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
   
-  const [avatarSeed, setAvatarSeed] = useState(generateRandomSeed());
+  const [seed, setSeed] = useState(generateRandomSeed());
   const [backgroundColor, setBackgroundColor] = useState('b6e3f4');
-  const [skinColor, setSkinColor] = useState<string[]>([]);
-  const [selectedEyes, setSelectedEyes] = useState<string[]>([]);
-  const [selectedFace, setSelectedFace] = useState<string[]>([]);
-  const [selectedHair, setSelectedHair] = useState<string[]>([]);
-  const [hairColor, setHairColor] = useState<string[]>([]);
-  const [selectedFacialHair, setSelectedFacialHair] = useState<string[]>([]);
-  const [facialHairColor, setFacialHairColor] = useState<string[]>([]);
-  const [selectedBody, setSelectedBody] = useState<string[]>([]);
-  const [clothingColor, setClothingColor] = useState<string[]>([]);
-  const [selectedMouth, setSelectedMouth] = useState<string[]>([]);
-  const [selectedNose, setSelectedNose] = useState<string[]>([]);
+  const [skinColor, setSkinColor] = useState<string | null>(null);
+  const [selectedEyes, setSelectedEyes] = useState<string | null>(null);
+  const [selectedHair, setSelectedHair] = useState<string | null>(null);
+  const [hairColor, setHairColor] = useState<string | null>(null);
+  const [selectedFacialHair, setSelectedFacialHair] = useState<string | null>(null);
+  const [selectedBody, setSelectedBody] = useState<string | null>(null);
+  const [clothingColor, setClothingColor] = useState<string | null>(null);
+  const [selectedMouth, setSelectedMouth] = useState<string | null>(null);
+  const [selectedNose, setSelectedNose] = useState<string | null>(null);
 
   useEffect(() => {
     loadCurrentAvatar();
@@ -53,7 +51,7 @@ export default function AvatarCustomization() {
         .single();
 
       if (profile?.avatar_seed && profile?.avatar_type === 'generated') {
-        setAvatarSeed(profile.avatar_seed);
+        setSeed(profile.avatar_seed);
       }
     } catch (error) {
       console.error("Error loading avatar:", error);
@@ -61,7 +59,7 @@ export default function AvatarCustomization() {
   };
 
   const handleRandomize = () => {
-    setAvatarSeed(generateRandomSeed());
+    setSeed(generateRandomSeed());
   };
 
   const handleSave = async () => {
@@ -73,7 +71,7 @@ export default function AvatarCustomization() {
       const { error } = await supabase
         .from("profiles")
         .update({
-          avatar_seed: avatarSeed,
+          avatar_seed: seed,
           avatar_type: 'generated',
           avatar_url: null,
         })
@@ -99,71 +97,44 @@ export default function AvatarCustomization() {
     }
   };
 
-  const toggleFeature = (feature: string, category: 'eyes' | 'face' | 'hair' | 'facialHair' | 'body' | 'mouth' | 'nose') => {
-    const setters = {
-      eyes: setSelectedEyes,
-      face: setSelectedFace,
-      hair: setSelectedHair,
-      facialHair: setSelectedFacialHair,
-      body: setSelectedBody,
-      mouth: setSelectedMouth,
-      nose: setSelectedNose,
-    };
-    
-    const getters = {
-      eyes: selectedEyes,
-      face: selectedFace,
-      hair: selectedHair,
-      facialHair: selectedFacialHair,
-      body: selectedBody,
-      mouth: selectedMouth,
-      nose: selectedNose,
-    };
-
-    const setter = setters[category];
-    const current = getters[category];
-
-    if (current.includes(feature)) {
-      setter(current.filter(f => f !== feature));
-    } else {
-      setter([...current, feature]);
-    }
+  const selectFeature = (
+    feature: string,
+    setter: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
+    setter(feature);
   };
 
-  const toggleColor = (color: string, setter: React.Dispatch<React.SetStateAction<string[]>>, current: string[]) => {
-    if (current.includes(color)) {
-      setter(current.filter(c => c !== color));
-    } else {
-      setter([...current, color]);
-    }
+  const selectColor = (
+    color: string,
+    setter: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
+    setter(color);
   };
 
-  const displayAvatarUrl = generateAvatarUrl(avatarSeed, {
+  const displayAvatarUrl = generateAvatarUrl(seed, {
     backgroundColor,
     size: 200,
-    skinColor: skinColor.length > 0 ? skinColor : undefined,
-    eyes: selectedEyes.length > 0 ? selectedEyes : undefined,
-    face: selectedFace.length > 0 ? selectedFace : undefined,
-    hair: selectedHair.length > 0 ? selectedHair : undefined,
-    hairColor: hairColor.length > 0 ? hairColor : undefined,
-    facialHair: selectedFacialHair.length > 0 ? selectedFacialHair : undefined,
-    facialHairColor: facialHairColor.length > 0 ? facialHairColor : undefined,
-    body: selectedBody.length > 0 ? selectedBody : undefined,
-    clothingColor: clothingColor.length > 0 ? clothingColor : undefined,
-    mouth: selectedMouth.length > 0 ? selectedMouth : undefined,
-    nose: selectedNose.length > 0 ? selectedNose : undefined,
+    ...(skinColor && { skinColor }),
+    ...(selectedEyes && { eyes: selectedEyes }),
+    ...(selectedHair && { hair: selectedHair }),
+    ...(hairColor && { hairColor }),
+    ...(selectedFacialHair && { facialHair: selectedFacialHair }),
+    ...(selectedBody && { body: selectedBody }),
+    ...(clothingColor && { clothingColor }),
+    ...(selectedMouth && { mouth: selectedMouth }),
+    ...(selectedNose && { nose: selectedNose }),
   });
 
-  const FeatureSection = ({ 
-    title, 
-    features, 
-    selected, 
-    category 
-  }: { 
-    title: string; 
-    features: string[]; 
-    selected: string[]; 
-    category: 'eyes' | 'face' | 'hair' | 'facialHair' | 'body' | 'mouth' | 'nose';
+  const FeatureSection = ({
+    title,
+    features,
+    selectedFeature,
+    onSelect,
+  }: {
+    title: string;
+    features: string[];
+    selectedFeature: string | null;
+    onSelect: (feature: string) => void;
   }) => (
     <div className="space-y-3">
       <Label className="text-sm font-semibold">{title}</Label>
@@ -172,9 +143,9 @@ export default function AvatarCustomization() {
           <Button
             key={feature}
             type="button"
-            variant={selected.includes(feature) ? "default" : "outline"}
+            variant={selectedFeature === feature ? "default" : "outline"}
             size="sm"
-            onClick={() => toggleFeature(feature, category)}
+            onClick={() => onSelect(feature)}
             className="capitalize"
           >
             {feature}
@@ -184,16 +155,16 @@ export default function AvatarCustomization() {
     </div>
   );
 
-  const ColorSection = ({ 
-    title, 
-    colors, 
-    selected, 
-    setter 
-  }: { 
-    title: string; 
-    colors: { name: string; value: string }[]; 
-    selected: string[]; 
-    setter: React.Dispatch<React.SetStateAction<string[]>>;
+  const ColorSection = ({
+    title,
+    colors,
+    selectedColor,
+    onSelect,
+  }: {
+    title: string;
+    colors: { name: string; value: string }[];
+    selectedColor: string | null;
+    onSelect: (color: string) => void;
   }) => (
     <div className="space-y-3">
       <Label className="text-sm font-semibold">{title}</Label>
@@ -202,9 +173,9 @@ export default function AvatarCustomization() {
           <button
             key={color.value}
             type="button"
-            onClick={() => toggleColor(color.value, setter, selected)}
+            onClick={() => onSelect(color.value)}
             className={`w-10 h-10 rounded-full border-2 transition-all ${
-              selected.includes(color.value)
+              selectedColor === color.value
                 ? 'border-primary scale-110 ring-2 ring-primary/20'
                 : 'border-border hover:scale-105'
             }`}
@@ -284,8 +255,8 @@ export default function AvatarCustomization() {
               <ColorSection
                 title="Skin Tone"
                 colors={SKIN_COLORS}
-                selected={skinColor}
-                setter={setSkinColor}
+                selectedColor={skinColor}
+                onSelect={(color) => selectColor(color, setSkinColor)}
               />
 
               <Separator />
@@ -294,18 +265,8 @@ export default function AvatarCustomization() {
               <FeatureSection
                 title="Eyes"
                 features={AVATAR_FEATURES.eyes}
-                selected={selectedEyes}
-                category="eyes"
-              />
-
-              <Separator />
-
-              {/* Face Shape */}
-              <FeatureSection
-                title="Face Shape"
-                features={AVATAR_FEATURES.face}
-                selected={selectedFace}
-                category="face"
+                selectedFeature={selectedEyes}
+                onSelect={(feature) => selectFeature(feature, setSelectedEyes)}
               />
 
               <Separator />
@@ -314,8 +275,8 @@ export default function AvatarCustomization() {
               <FeatureSection
                 title="Hair Style"
                 features={AVATAR_FEATURES.hair}
-                selected={selectedHair}
-                category="hair"
+                selectedFeature={selectedHair}
+                onSelect={(feature) => selectFeature(feature, setSelectedHair)}
               />
 
               <Separator />
@@ -324,8 +285,8 @@ export default function AvatarCustomization() {
               <ColorSection
                 title="Hair Color"
                 colors={HAIR_COLORS}
-                selected={hairColor}
-                setter={setHairColor}
+                selectedColor={hairColor}
+                onSelect={(color) => selectColor(color, setHairColor)}
               />
 
               <Separator />
@@ -334,18 +295,10 @@ export default function AvatarCustomization() {
               <FeatureSection
                 title="Facial Hair"
                 features={AVATAR_FEATURES.facialHair}
-                selected={selectedFacialHair}
-                category="facialHair"
-              />
-
-              <Separator />
-
-              {/* Facial Hair Color */}
-              <ColorSection
-                title="Facial Hair Color"
-                colors={HAIR_COLORS}
-                selected={facialHairColor}
-                setter={setFacialHairColor}
+                selectedFeature={selectedFacialHair}
+                onSelect={(feature) =>
+                  selectFeature(feature, setSelectedFacialHair)
+                }
               />
 
               <Separator />
@@ -354,8 +307,8 @@ export default function AvatarCustomization() {
               <FeatureSection
                 title="Body Type"
                 features={AVATAR_FEATURES.body}
-                selected={selectedBody}
-                category="body"
+                selectedFeature={selectedBody}
+                onSelect={(feature) => selectFeature(feature, setSelectedBody)}
               />
 
               <Separator />
@@ -364,8 +317,8 @@ export default function AvatarCustomization() {
               <ColorSection
                 title="Clothing Color"
                 colors={CLOTHING_COLORS}
-                selected={clothingColor}
-                setter={setClothingColor}
+                selectedColor={clothingColor}
+                onSelect={(color) => selectColor(color, setClothingColor)}
               />
 
               <Separator />
@@ -374,8 +327,8 @@ export default function AvatarCustomization() {
               <FeatureSection
                 title="Mouth"
                 features={AVATAR_FEATURES.mouth}
-                selected={selectedMouth}
-                category="mouth"
+                selectedFeature={selectedMouth}
+                onSelect={(feature) => selectFeature(feature, setSelectedMouth)}
               />
 
               <Separator />
@@ -384,8 +337,8 @@ export default function AvatarCustomization() {
               <FeatureSection
                 title="Nose"
                 features={AVATAR_FEATURES.nose}
-                selected={selectedNose}
-                category="nose"
+                selectedFeature={selectedNose}
+                onSelect={(feature) => selectFeature(feature, setSelectedNose)}
               />
             </CardContent>
           </Card>

@@ -1,17 +1,15 @@
 export interface AvatarOptions {
   backgroundColor?: string;
   size?: number;
-  skinColor?: string[];
-  eyes?: string[];
-  face?: string[];
-  hair?: string[];
-  hairColor?: string[];
-  facialHair?: string[];
-  facialHairColor?: string[];
-  body?: string[];
-  clothingColor?: string[];
-  mouth?: string[];
-  nose?: string[];
+  skinColor?: string;
+  eyes?: string;
+  hair?: string;
+  hairColor?: string;
+  facialHair?: string;
+  body?: string;
+  clothingColor?: string;
+  mouth?: string;
+  nose?: string;
 }
 
 export const generateAvatarUrl = (seed: string, options?: AvatarOptions): string => {
@@ -22,39 +20,44 @@ export const generateAvatarUrl = (seed: string, options?: AvatarOptions): string
     ...(options?.size && { size: options.size.toString() }),
   });
 
-  // Add array-based options
-  if (options?.skinColor && options.skinColor.length > 0) {
-    params.append('skinColor', options.skinColor.join(','));
+  // Add single-value options
+  if (options?.skinColor) {
+    params.append('skinColor', options.skinColor);
   }
-  if (options?.eyes && options.eyes.length > 0) {
-    params.append('eyes', options.eyes.join(','));
+  if (options?.eyes) {
+    params.append('eyes', options.eyes);
   }
-  if (options?.face && options.face.length > 0) {
-    params.append('face', options.face.join(','));
+  if (options?.hair) {
+    params.append('hair', options.hair);
   }
-  if (options?.hair && options.hair.length > 0) {
-    params.append('hair', options.hair.join(','));
+  if (options?.hairColor) {
+    params.append('hairColor', options.hairColor);
   }
-  if (options?.hairColor && options.hairColor.length > 0) {
-    params.append('hairColor', options.hairColor.join(','));
+  
+  // Handle facial hair - if "nothing", use probability=0, otherwise set it and mirror hair color
+  if (options?.facialHair) {
+    if (options.facialHair === 'nothing') {
+      params.append('facialHairProbability', '0');
+    } else {
+      params.append('facialHair', options.facialHair);
+      // Mirror hair color to facial hair
+      if (options?.hairColor) {
+        params.append('facialHairColor', options.hairColor);
+      }
+    }
   }
-  if (options?.facialHair && options.facialHair.length > 0) {
-    params.append('facialHair', options.facialHair.join(','));
+  
+  if (options?.body) {
+    params.append('body', options.body);
   }
-  if (options?.facialHairColor && options.facialHairColor.length > 0) {
-    params.append('facialHairColor', options.facialHairColor.join(','));
+  if (options?.clothingColor) {
+    params.append('clothingColor', options.clothingColor);
   }
-  if (options?.body && options.body.length > 0) {
-    params.append('body', options.body.join(','));
+  if (options?.mouth) {
+    params.append('mouth', options.mouth);
   }
-  if (options?.clothingColor && options.clothingColor.length > 0) {
-    params.append('clothingColor', options.clothingColor.join(','));
-  }
-  if (options?.mouth && options.mouth.length > 0) {
-    params.append('mouth', options.mouth.join(','));
-  }
-  if (options?.nose && options.nose.length > 0) {
-    params.append('nose', options.nose.join(','));
+  if (options?.nose) {
+    params.append('nose', options.nose);
   }
 
   return `${baseUrl}?${params.toString()}`;
@@ -80,42 +83,40 @@ export const BACKGROUND_COLORS = [
 ];
 
 export const SKIN_COLORS = [
-  { name: 'Light', value: 'ffdbb4' },
-  { name: 'Medium Light', value: 'edb98a' },
-  { name: 'Medium', value: 'd08b5b' },
-  { name: 'Medium Dark', value: 'ae5d29' },
-  { name: 'Dark', value: '614335' },
+  { name: 'Tone 1', value: '623d36' },
+  { name: 'Tone 2', value: '92594b' },
+  { name: 'Tone 3', value: 'b16a5b' },
+  { name: 'Tone 4', value: 'd78774' },
+  { name: 'Tone 5', value: 'e5a07e' },
+  { name: 'Tone 6', value: 'e7a391' },
+  { name: 'Tone 7', value: 'eeb4a4' },
 ];
 
 export const HAIR_COLORS = [
-  { name: 'Blonde', value: 'f59e0b' },
-  { name: 'Light Brown', value: 'a16207' },
-  { name: 'Brown', value: '78350f' },
-  { name: 'Dark Brown', value: '451a03' },
-  { name: 'Black', value: '000000' },
-  { name: 'Auburn', value: 'dc2626' },
-  { name: 'Red', value: 'ef4444' },
-  { name: 'Gray', value: '9ca3af' },
-  { name: 'White', value: 'f3f4f6' },
+  { name: 'Brown', value: '6c4545' },
+  { name: 'Dark Purple', value: '362c47' },
+  { name: 'Platinum', value: 'dee1f5' },
+  { name: 'Red', value: 'e15c66' },
+  { name: 'Pink', value: 'e16381' },
+  { name: 'Orange', value: 'f27d65' },
+  { name: 'Blonde', value: 'f29c65' },
 ];
 
 export const CLOTHING_COLORS = [
-  { name: 'Black', value: '000000' },
-  { name: 'White', value: 'ffffff' },
-  { name: 'Gray', value: '6b7280' },
-  { name: 'Red', value: 'ef4444' },
-  { name: 'Blue', value: '3b82f6' },
-  { name: 'Green', value: '22c55e' },
-  { name: 'Yellow', value: 'eab308' },
-  { name: 'Purple', value: 'a855f7' },
+  { name: 'Green', value: '6dbb58' },
+  { name: 'Cyan', value: '54d7c7' },
+  { name: 'Blue', value: '456dff' },
+  { name: 'Purple', value: '7555ca' },
+  { name: 'Red', value: 'e24553' },
+  { name: 'Yellow', value: 'f3b63a' },
+  { name: 'Pink', value: 'f55d81' },
 ];
 
 export const AVATAR_FEATURES = {
-  eyes: ['open', 'closed', 'happy', 'sleep', 'surprised', 'wink'],
-  face: ['square', 'round'],
-  hair: ['full', 'short', 'buzzcut', 'bald', 'long'],
-  facialHair: ['none', 'beard', 'goatee', 'mustache', 'stubble'],
-  body: ['squared', 'rounded', 'small'],
-  mouth: ['smile', 'smirk', 'open', 'serious'],
-  nose: ['small', 'medium', 'large', 'pointed'],
+  eyes: ['glasses', 'happy', 'open', 'sleep', 'sunglasses', 'wink'],
+  hair: ['bald', 'balding', 'beanie', 'bobBangs', 'bobCut', 'bunUndercut', 'buzzcut', 'cap', 'curly', 'curlyBun', 'curlyHighTop', 'extralong', 'fade', 'long', 'mohawk', 'pigtails', 'shortCombover', 'shortComboverChops', 'sideShave', 'straightBun'],
+  facialHair: ['beardMustache', 'goatee', 'pyramid', 'shadow', 'soulPatch', 'walrus', 'nothing'],
+  body: ['checkered', 'rounded', 'small', 'squared'],
+  mouth: ['bigSmile', 'frown', 'lips', 'pacifier', 'smile', 'smirk', 'surprise'],
+  nose: ['mediumRound', 'smallRound', 'wrinkles'],
 };
