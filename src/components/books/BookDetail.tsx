@@ -31,6 +31,7 @@ interface Book {
   is_completed: boolean;
   rating?: number;
   review?: string;
+  isbn?: string;
 }
 
 interface TimelineEntry {
@@ -348,6 +349,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
 
       <EditBookModal
         bookId={bookId}
+        isbn={book.isbn}
         currentData={{
           title: book.title,
           author: book.author,
