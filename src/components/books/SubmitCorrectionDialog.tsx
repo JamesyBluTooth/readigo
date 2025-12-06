@@ -81,7 +81,7 @@ export const SubmitCorrectionDialog = ({
         return;
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('book_correction_submissions')
         .insert([{
           isbn,
@@ -89,13 +89,25 @@ export const SubmitCorrectionDialog = ({
           submitted_by: user.id,
           original_data: JSON.parse(JSON.stringify(originalData)) as Json,
           proposed_changes: JSON.parse(JSON.stringify(proposedChanges)) as Json,
-        }]);
+        }])
+        .select('id')
+        .single();
 
       if (error) throw error;
 
+      // Trigger email notification to admin
+      const { error: notifyError } = await supabase.functions.invoke('notify-book-correction', {
+        body: { submissionId: data.id },
+      });
+
+      if (notifyError) {
+        console.error('Failed to send notification:', notifyError);
+        // Don't fail the submission, just log the error
+      }
+
       toast({
         title: "Correction Submitted",
-        description: "Your correction has been submitted for admin review.",
+        description: "Your correction has been submitted and the admin has been notified.",
       });
 
       onSuccess();
