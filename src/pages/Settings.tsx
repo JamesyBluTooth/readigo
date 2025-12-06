@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { 
   User, Lock, BookOpen, Palette, Bell, Users, 
@@ -18,6 +19,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { AvatarDisplay } from "@/components/profile/AvatarDisplay";
 import { ThemePreview } from "@/components/settings/ThemePreview";
+import { isAdmin } from "@/lib/adminUtils";
 
 interface UserProfile {
   user_id: string;
@@ -40,16 +42,24 @@ interface UserProfile {
 }
 
 export default function Settings() {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [email, setEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     loadProfile();
+    checkAdminStatus();
   }, []);
+
+  const checkAdminStatus = async () => {
+    const adminStatus = await isAdmin();
+    setIsUserAdmin(adminStatus);
+  };
 
   const loadProfile = async () => {
     try {
@@ -526,6 +536,26 @@ export default function Settings() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Admin Section - Only shown for admins */}
+      {isUserAdmin && (
+        <Card className="border-primary/50 bg-primary/5">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              <CardTitle>Admin Panel</CardTitle>
+              <Badge variant="secondary" className="ml-2">Admin</Badge>
+            </div>
+            <CardDescription>Manage app content and user submissions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button className="w-full" onClick={() => navigate('/admin')}>
+              <Shield className="h-4 w-4 mr-2" />
+              Open Admin Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Sign Out */}
       <Card className="border-destructive/50">
