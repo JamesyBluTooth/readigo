@@ -177,59 +177,6 @@ export type Database = {
           },
         ]
       }
-      book_correction_submissions: {
-        Row: {
-          book_id: string | null
-          created_at: string | null
-          id: string
-          isbn: string
-          original_data: Json
-          proposed_changes: Json
-          rejection_reason: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: Database["public"]["Enums"]["correction_status"] | null
-          submitted_by: string
-          updated_at: string | null
-        }
-        Insert: {
-          book_id?: string | null
-          created_at?: string | null
-          id?: string
-          isbn: string
-          original_data: Json
-          proposed_changes: Json
-          rejection_reason?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: Database["public"]["Enums"]["correction_status"] | null
-          submitted_by: string
-          updated_at?: string | null
-        }
-        Update: {
-          book_id?: string | null
-          created_at?: string | null
-          id?: string
-          isbn?: string
-          original_data?: Json
-          proposed_changes?: Json
-          rejection_reason?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: Database["public"]["Enums"]["correction_status"] | null
-          submitted_by?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "book_correction_submissions_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       books: {
         Row: {
           author: string | null
@@ -795,44 +742,6 @@ export type Database = {
           },
         ]
       }
-      correction_action_tokens: {
-        Row: {
-          action: string
-          created_at: string
-          expires_at: string
-          id: string
-          submission_id: string
-          token: string
-          used_at: string | null
-        }
-        Insert: {
-          action: string
-          created_at?: string
-          expires_at: string
-          id?: string
-          submission_id: string
-          token: string
-          used_at?: string | null
-        }
-        Update: {
-          action?: string
-          created_at?: string
-          expires_at?: string
-          id?: string
-          submission_id?: string
-          token?: string
-          used_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "correction_action_tokens_submission_id_fkey"
-            columns: ["submission_id"]
-            isOneToOne: false
-            referencedRelation: "book_correction_submissions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       daily_challenges: {
         Row: {
           challenge_date: string
@@ -934,7 +843,6 @@ export type Database = {
           page_number: number | null
           updated_at: string
           user_id: string
-          xp_earned: number | null
         }
         Insert: {
           book_id: string
@@ -944,7 +852,6 @@ export type Database = {
           page_number?: number | null
           updated_at?: string
           user_id: string
-          xp_earned?: number | null
         }
         Update: {
           book_id?: string
@@ -954,7 +861,6 @@ export type Database = {
           page_number?: number | null
           updated_at?: string
           user_id?: string
-          xp_earned?: number | null
         }
         Relationships: [
           {
@@ -986,8 +892,6 @@ export type Database = {
           display_name: string | null
           friend_code: string
           id: string
-          last_reading_date: string | null
-          level: number | null
           notifications_achievements: boolean | null
           notifications_friend_activity: boolean | null
           notifications_reading_reminders: boolean | null
@@ -998,7 +902,6 @@ export type Database = {
           show_spoiler_warnings: boolean | null
           text_size_preference: number | null
           theme_preference: string | null
-          total_xp: number | null
           updated_at: string
           user_id: string
         }
@@ -1014,8 +917,6 @@ export type Database = {
           display_name?: string | null
           friend_code: string
           id?: string
-          last_reading_date?: string | null
-          level?: number | null
           notifications_achievements?: boolean | null
           notifications_friend_activity?: boolean | null
           notifications_reading_reminders?: boolean | null
@@ -1026,7 +927,6 @@ export type Database = {
           show_spoiler_warnings?: boolean | null
           text_size_preference?: number | null
           theme_preference?: string | null
-          total_xp?: number | null
           updated_at?: string
           user_id: string
         }
@@ -1042,8 +942,6 @@ export type Database = {
           display_name?: string | null
           friend_code?: string
           id?: string
-          last_reading_date?: string | null
-          level?: number | null
           notifications_achievements?: boolean | null
           notifications_friend_activity?: boolean | null
           notifications_reading_reminders?: boolean | null
@@ -1054,7 +952,6 @@ export type Database = {
           show_spoiler_warnings?: boolean | null
           text_size_preference?: number | null
           theme_preference?: string | null
-          total_xp?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -1068,7 +965,6 @@ export type Database = {
           pages_read: number
           time_spent_minutes: number | null
           user_id: string
-          xp_earned: number | null
         }
         Insert: {
           book_id: string
@@ -1077,7 +973,6 @@ export type Database = {
           pages_read: number
           time_spent_minutes?: number | null
           user_id: string
-          xp_earned?: number | null
         }
         Update: {
           book_id?: string
@@ -1086,7 +981,6 @@ export type Database = {
           pages_read?: number
           time_spent_minutes?: number | null
           user_id?: string
-          xp_earned?: number | null
         }
         Relationships: [
           {
@@ -1173,27 +1067,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_roles: {
-        Row: {
-          created_at: string | null
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -1207,11 +1080,6 @@ export type Database = {
         }
         Returns: string
       }
-      award_xp: {
-        Args: { p_user_id: string; p_xp_amount: number }
-        Returns: undefined
-      }
-      calculate_level: { Args: { xp: number }; Returns: number }
       ensure_reading_stats_for_week: { Args: never; Returns: undefined }
       generate_club_invite_code: { Args: never; Returns: string }
       generate_daily_challenge: { Args: { p_user_id: string }; Returns: string }
@@ -1219,13 +1087,6 @@ export type Database = {
       get_club_role_level: {
         Args: { _club_id: string; _user_id: string }
         Returns: number
-      }
-      has_app_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
       }
       has_club_role: {
         Args: {
@@ -1241,7 +1102,6 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
       club_achievement_type:
         | "first_book"
         | "five_books"
@@ -1255,7 +1115,6 @@ export type Database = {
       club_invite_status: "pending" | "accepted" | "declined" | "expired"
       club_reading_status: "not_started" | "reading" | "completed" | "dropped"
       club_role_type: "owner" | "admin" | "moderator" | "member"
-      correction_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1383,7 +1242,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
       club_achievement_type: [
         "first_book",
         "five_books",
@@ -1398,7 +1256,6 @@ export const Constants = {
       club_invite_status: ["pending", "accepted", "declined", "expired"],
       club_reading_status: ["not_started", "reading", "completed", "dropped"],
       club_role_type: ["owner", "admin", "moderator", "member"],
-      correction_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
