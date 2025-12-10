@@ -92,7 +92,7 @@ export const EditBookModal = ({
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-xs">
-            These changes only affect how the book displays on your device. They won't be saved to the database and are useful when Google Books is missing information.
+            These changes only affect how the book displays on your device. They won't be saved to the database and are useful when our sources are missing information.
           </AlertDescription>
         </Alert>
 

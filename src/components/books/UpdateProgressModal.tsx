@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { CompleteBookModal } from "./CompleteBookModal";
 
 interface UpdateProgressModalProps {
   open: boolean;
@@ -26,6 +27,7 @@ export const UpdateProgressModal = ({
   const [pagesRead, setPagesRead] = useState("");
   const [timeSpent, setTimeSpent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [completeModalOpen, setCompleteModalOpen] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,8 +96,14 @@ export const UpdateProgressModal = ({
 
       setPagesRead("");
       setTimeSpent("");
-      onOpenChange(false);
       onUpdate();
+
+      if (newCurrentPage >= totalPages) {
+        // Automatically open CompleteBookModal
+        setCompleteModalOpen(true);
+      } else {
+        onOpenChange(false);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -126,8 +134,10 @@ export const UpdateProgressModal = ({
               required
             />
             <p className="text-xs text-muted-foreground">
-              Currently on page {currentPage} of {totalPages}
+              Currently on page{" "}
+              {Math.min(currentPage + (parseInt(pagesRead) || 0), totalPages)} of {totalPages}
             </p>
+
           </div>
           <div className="space-y-2">
             <Label htmlFor="time">How long did it take? (minutes)</Label>
