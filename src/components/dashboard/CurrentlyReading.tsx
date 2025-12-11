@@ -16,6 +16,7 @@ interface CurrentlyReadingProps {
 }
 
 export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) => {
+  // No book? Show the “empty state” card.
   if (!book) {
     return (
       <Card className="animate-fade-in">
@@ -34,7 +35,10 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
     );
   }
 
-  const progress = book.total_pages && book.total_pages > 0 ? (book.current_page / book.total_pages) * 100 : 0;
+  const progress =
+    book.total_pages && book.total_pages > 0
+      ? (book.current_page / book.total_pages) * 100
+      : 0;
 
   return (
     <Card className="animate-fade-in">
@@ -44,6 +48,7 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
           Currently Reading
         </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-4">
         <div className="flex gap-4">
           {book.cover_url && (
@@ -53,11 +58,16 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
               className="w-20 h-28 object-cover rounded-lg shadow-md"
             />
           )}
+
           <div className="flex-1 space-y-2">
-            <h3 className="font-semibold text-foreground line-clamp-2">{book.title}</h3>
+            <h3 className="font-semibold text-foreground line-clamp-2">
+              {book.title}
+            </h3>
+
             {book.author && (
               <p className="text-sm text-muted-foreground">{book.author}</p>
             )}
+
             <div className="space-y-1">
               {book.total_pages && book.total_pages > 0 ? (
                 <>
@@ -65,7 +75,9 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
                     <span className="text-muted-foreground">
                       {book.current_page} / {book.total_pages} pages
                     </span>
-                    <span className="font-medium text-primary">{Math.round(progress)}%</span>
+                    <span className="font-medium text-primary">
+                      {Math.round(progress)}%
+                    </span>
                   </div>
                   <Progress value={progress} className="h-2" />
                 </>
@@ -77,6 +89,7 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
             </div>
           </div>
         </div>
+
         <Button onClick={() => onContinue(book.id)} className="w-full">
           Continue Reading
         </Button>

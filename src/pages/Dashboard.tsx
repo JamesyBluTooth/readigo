@@ -21,6 +21,25 @@ interface CurrentBook {
   total_pages: number;
 }
 
+const getCurrentBook = (books: any[]) => {
+  if (!books || books.length === 0) return undefined;
+
+  const sorted = [...books].sort(
+    (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+  );
+
+  const latest = sorted[0];
+
+  return {
+    id: latest.id,
+    title: latest.title,
+    author: latest.author,
+    cover_url: latest.cover_url,
+    current_page: latest.current_page || 0,
+    total_pages: latest.total_pages || 0,
+  };
+};
+
 export const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats>({
     readingSpeed: 0,
@@ -28,6 +47,7 @@ export const Dashboard = () => {
     totalTimeRead: 0,
     booksCompletedThisYear: 0,
   });
+
   const [currentBook, setCurrentBook] = useState<CurrentBook | undefined>();
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,28 +58,22 @@ export const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     setLoading(true);
-    
-    // Fetch progress entries for reading speed and total time
+
     const { data: progressData } = await supabase
       .from("progress_entries")
       .select("pages_read, time_spent_minutes, created_at");
 
-    // Fetch books for currently reading and books completed this year
     const { data: booksData } = await supabase
       .from("books")
       .select("*")
       .order("updated_at", { ascending: false });
 
     if (progressData) {
-      // Calculate reading speed (pages per minute)
-      const totalPages = progressData.reduce((sum, entry) => sum + entry.pages_read, 0);
-      const totalMinutes = progressData.reduce((sum, entry) => sum + entry.time_spent_minutes, 0);
+      const totalPages = progressData.reduce((sum, e) => sum + e.pages_read, 0);
+      const totalMinutes = progressData.reduce((sum, e) => sum + e.time_spent_minutes, 0);
       const readingSpeed = totalMinutes > 0 ? totalPages / totalMinutes : 0;
 
-      // Calculate total time read in hours
       const totalTimeRead = totalMinutes / 60;
-
-      // Calculate reading streak (consecutive days with progress)
       const readingStreak = calculateReadingStreak(progressData);
 
       setStats((prev) => ({
@@ -71,28 +85,14 @@ export const Dashboard = () => {
     }
 
     if (booksData) {
-      // Find currently reading book (not completed, has progress)
-      const inProgressBook = booksData.find(
-        (book) => !book.is_completed && book.current_page > 0
-      );
-      
-      if (inProgressBook) {
-        setCurrentBook({
-          id: inProgressBook.id,
-          title: inProgressBook.title,
-          author: inProgressBook.author,
-          cover_url: inProgressBook.cover_url,
-          current_page: inProgressBook.current_page,
-          total_pages: inProgressBook.total_pages,
-        });
-      }
+      // ✔️ Corrected usage of getCurrentBook
+      const latest = getCurrentBook(booksData);
+      setCurrentBook(latest);
 
-      // Count books completed this year
       const currentYear = new Date().getFullYear();
       const booksThisYear = booksData.filter((book) => {
         if (!book.is_completed) return false;
-        const bookYear = new Date(book.updated_at).getFullYear();
-        return bookYear === currentYear;
+        return new Date(book.updated_at).getFullYear() === currentYear;
       }).length;
 
       setStats((prev) => ({ ...prev, booksCompletedThisYear: booksThisYear }));
@@ -104,10 +104,9 @@ export const Dashboard = () => {
   const calculateReadingStreak = (progressData: any[]) => {
     if (!progressData.length) return 0;
 
-    // Sort by date descending
     const sortedDates = progressData
       .map((entry) => new Date(entry.created_at).toDateString())
-      .filter((date, index, self) => self.indexOf(date) === index)
+      .filter((d, i, arr) => arr.indexOf(d) === i)
       .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
     let streak = 0;
@@ -119,11 +118,8 @@ export const Dashboard = () => {
         (currentDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24)
       );
 
-      if (diffDays === streak) {
-        streak++;
-      } else {
-        break;
-      }
+      if (diffDays === streak) streak++;
+      else break;
     }
 
     return streak;
@@ -150,7 +146,7 @@ export const Dashboard = () => {
         <div>
           <h2 className="text-3xl font-bold text-foreground mb-2">Welcome back!</h2>
           <p className="text-muted-foreground">
-            {currentBook 
+            {currentBook
               ? `You left off in "${currentBook.title}". Ready to continue?`
               : "Start tracking your reading journey today."}
           </p>

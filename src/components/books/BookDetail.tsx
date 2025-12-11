@@ -250,7 +250,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
                 </div>
               ) : (
                 <div className="text-sm text-amber-600 dark:text-amber-500">
-                  ⚠️ Page count unknown - Add missing details below
+                  ⚠️ Page count unknown - Add missing details
                 </div>
               )}
             </div>
