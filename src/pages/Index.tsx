@@ -17,7 +17,7 @@ import { OnboardingContainer } from "@/components/onboarding/OnboardingContainer
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "books" | "profile" | "challenge-history" | "social" | "settings">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "books" | "profile" | "challenge-history" | "social" | "settings">("books");
 
   useEffect(() => {
     const {
