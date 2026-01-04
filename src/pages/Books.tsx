@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AddBookForm } from "@/components/books/AddBookForm";
 import { BookCard } from "@/components/books/BookCard";
-import { BookDetail } from "@/components/books/BookDetail";
 import { BookMarked } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 
 interface Book {
   id: string;
@@ -18,8 +19,8 @@ interface Book {
 
 export const Books = () => {
   const [books, setBooks] = useState<Book[]>([]);
-  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBooks();
@@ -78,22 +79,13 @@ export const Books = () => {
                     currentPage={book.current_page}
                     totalPages={book.total_pages}
                     isCompleted={book.is_completed}
-                    onClick={() => setSelectedBookId(book.id)}
+                    onClick={() => navigate(`/book/${book.id}`)}
                   />
                 ))}
               </div>
             )}
           </div>
         </div>
-
-      {selectedBookId && (
-        <BookDetail
-          bookId={selectedBookId}
-          open={!!selectedBookId}
-          onOpenChange={(open) => !open && setSelectedBookId(null)}
-          onUpdate={fetchBooks}
-        />
-      )}
     </div>
   );
 };

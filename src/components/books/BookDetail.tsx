@@ -1,23 +1,20 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, Clock, FileText, Star, CheckCircle2, Pencil } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
 import { UpdateProgressModal } from "./UpdateProgressModal";
 import { AddNoteModal } from "./AddNoteModal";
 import { CompleteBookModal } from "./CompleteBookModal";
-import { TimelineItem } from "./TimelineItem";
 import { EditBookModal } from "./EditBookModal";
-import { getUserEdit, applyUserEdits, BookUserEdit } from "@/lib/bookUserEdits";
+import { TimelineItem } from "./TimelineItem";
+import { getUserEdit, applyUserEdits } from "@/lib/bookUserEdits";
 
 interface BookDetailProps {
   bookId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onUpdate: () => void;
+  onUpdate?: () => void;
 }
 
 interface Book {
@@ -30,299 +27,246 @@ interface Book {
   total_pages: number;
   current_page: number;
   is_completed: boolean;
-  rating?: number;
-  review?: string;
 }
 
 interface TimelineEntry {
   id: string;
-  type: 'progress' | 'note' | 'completion' | 'incomplete';
+  type: "progress" | "note";
   created_at: string;
-  content?: string;
   pages_read?: number;
   time_spent_minutes?: number;
-  rating?: number;
-  review?: string;
+  content?: string;
 }
 
-export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailProps) => {
+export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
   const [book, setBook] = useState<Book | null>(null);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
+
   const { toast } = useToast();
 
   useEffect(() => {
-    if (open && bookId) {
-      fetchBookDetails();
-      fetchTimeline();
-    }
-  }, [open, bookId, refreshKey]);
+    fetchBook();
+    fetchTimeline();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookId, refreshKey]);
 
-  const fetchBookDetails = async () => {
+  const fetchBook = async () => {
     const { data, error } = await supabase
       .from("books")
       .select("*")
       .eq("id", bookId)
       .single();
 
-    if (error) {
-      console.error("Error fetching book:", error);
-      return;
-    }
+    if (error || !data) return;
 
-    // Apply user edits from database if available
     if (data.isbn) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const userEdit = await getUserEdit(data.isbn, user.id);
-        if (userEdit) {
-          const mergedData = applyUserEdits(data, userEdit);
-          setBook(mergedData);
+      const { data: auth } = await supabase.auth.getUser();
+      if (auth.user) {
+        const edit = await getUserEdit(data.isbn, auth.user.id);
+        if (edit) {
+          setBook(applyUserEdits(data, edit));
           return;
         }
       }
     }
-    
+
     setBook(data);
   };
 
   const fetchTimeline = async () => {
-    const [progressData, notesData] = await Promise.all([
+    const [progress, notes] = await Promise.all([
       supabase
         .from("progress_entries")
         .select("*")
-        .eq("book_id", bookId)
-        .order("created_at", { ascending: false }),
+        .eq("book_id", bookId),
       supabase
         .from("notes")
         .select("*")
-        .eq("book_id", bookId)
-        .order("created_at", { ascending: false }),
+        .eq("book_id", bookId),
     ]);
 
-    const timelineItems: TimelineEntry[] = [];
+    const items: TimelineEntry[] = [];
 
-    progressData.data?.forEach((entry) => {
-      timelineItems.push({
-        id: entry.id,
-        type: 'progress',
-        created_at: entry.created_at,
-        pages_read: entry.pages_read,
-        time_spent_minutes: entry.time_spent_minutes,
-      });
-    });
-
-    notesData.data?.forEach((note) => {
-      timelineItems.push({
-        id: note.id,
-        type: 'note',
-        created_at: note.created_at,
-        content: note.content,
-      });
-    });
-
-    timelineItems.sort((a, b) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    progress.data?.forEach((p) =>
+      items.push({
+        id: p.id,
+        type: "progress",
+        created_at: p.created_at,
+        pages_read: p.pages_read,
+        time_spent_minutes: p.time_spent_minutes,
+      })
     );
 
-    setTimeline(timelineItems);
-  };
-
-  const handleMarkIncomplete = async () => {
-    if (!book) return;
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!profile) return;
-
-    const { error: updateError } = await supabase
-      .from("books")
-      .update({
-        is_completed: false,
-        current_page: Math.floor(book.total_pages * 0.99),
-        rating: null,
-        review: null,
+    notes.data?.forEach((n) =>
+      items.push({
+        id: n.id,
+        type: "note",
+        created_at: n.created_at,
+        content: n.content,
       })
-      .eq("id", bookId);
+    );
 
-    if (updateError) {
-      console.error("Error marking incomplete:", updateError);
-      return;
-    }
+    items.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() -
+        new Date(a.created_at).getTime()
+    );
 
-    const { error: noteError } = await supabase
-      .from("notes")
-      .insert({
-        book_id: bookId,
-        user_id: profile.user_id,
-        content: "Marked incomplete",
-      });
-
-    if (noteError) {
-      console.error("Error adding note:", noteError);
-    }
-
-    fetchBookDetails();
-    fetchTimeline();
-    onUpdate();
+    setTimeline(items);
   };
 
   if (!book) return null;
 
+  const percent =
+    book.total_pages > 0
+      ? Math.round((book.current_page / book.total_pages) * 100)
+      : 0;
+
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
-          <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-2xl">{book.title}</DialogTitle>
-              <Button
-                size="sm"
-                onClick={() => setShowEditModal(true)}
-              >
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit Details
-              </Button>
-            </div>
-          </DialogHeader>
+      <div className="bg-white border-2 border-border rounded-[22px] p-6 shadow-[0_6px_0_#e5e7eb] flex flex-col gap-6">
 
-          <div className="flex gap-6 pb-4 border-b">
-            <div className="w-32 h-44 bg-muted rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
-              {book.cover_url ? (
-                <img
-                  src={book.cover_url}
-                  alt={book.title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-                  <BookOpen className="w-12 h-12 text-muted-foreground" />
-                </div>
-              )}
-            </div>
-
-            <div className="flex-1 space-y-3">
-              {book.author && (
-                <p className="text-lg text-muted-foreground">{book.author}</p>
-              )}
-              
-              {book.genres.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {book.genres.map((genre) => (
-                    <Badge key={genre} variant="secondary">
-                      {genre}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <BookOpen className="w-4 h-4" />
-                <span>{book.total_pages ? `${book.total_pages} pages` : 'Page count unknown'}</span>
-              </div>
-
-              {book.is_completed ? (
-                <div className="space-y-2">
-                  <Badge className="bg-success text-success-foreground">
-                    <CheckCircle2 className="w-4 h-4 mr-1" />
-                    Completed
-                  </Badge>
-                  {book.rating && (
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 fill-primary text-primary" />
-                      <span className="font-medium">{book.rating}/5</span>
-                    </div>
-                  )}
-                </div>
-              ) : book.total_pages && book.total_pages > 0 ? (
-                <div className="space-y-2">
-                  <div className="text-sm text-muted-foreground">
-                    Page {book.current_page} of {book.total_pages}
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500"
-                      style={{
-                        width: `${(book.current_page / book.total_pages) * 100}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="text-sm text-amber-600 dark:text-amber-500">
-                  ⚠️ Page count unknown - Add missing details
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex gap-2 pb-4">
-            {!book.is_completed ? (
-              <>
-                <Button 
-                  onClick={() => {
-                    if (!book.total_pages || book.total_pages === 0) {
-                      toast({
-                        title: "Missing page count",
-                        description: "Please add the total page count first using the Edit Details button.",
-                        variant: "destructive",
-                      });
-                      return;
-                    }
-                    setShowProgressModal(true);
-                  }} 
-                  className="flex-1"
-                  disabled={!book.total_pages || book.total_pages === 0}
-                >
-                  <Clock className="w-4 h-4 mr-2" />
-                  Update Progress
-                </Button>
-                <Button onClick={() => setShowNoteModal(true)} variant="secondary" className="flex-1">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Add Note
-                </Button>
-                <Button onClick={() => setShowCompleteModal(true)} variant="default" className="flex-1">
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Complete
-                </Button>
-              </>
+        {/* HEADER */}
+        <div className="flex gap-5">
+          <div className="w-[112px] h-[168px] rounded-[14px] bg-[#e9ecff] flex items-center justify-center text-muted-foreground font-bold">
+            {book.cover_url ? (
+              <img
+                src={book.cover_url}
+                alt={book.title}
+                className="w-full h-full object-cover rounded-[14px]"
+              />
             ) : (
-              <Button onClick={handleMarkIncomplete} className="w-full">
-                Mark as Incomplete
-              </Button>
+              <BookOpen />
             )}
           </div>
 
-          <ScrollArea className="flex-1 -mx-6 px-6">
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Timeline</h3>
-              {timeline.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  No activity yet. Start tracking your progress!
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {timeline.map((entry) => (
-                    <TimelineItem key={entry.id} entry={entry} />
-                  ))}
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold">{book.title}</h1>
+            {book.author && (
+              <p className="text-muted-foreground mt-1">
+                {book.author}
+              </p>
+            )}
+
+            <div className="mt-1 text-sm font-semibold text-primary">
+              Currently reading · Last read today
+            </div>
+
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="mt-1 text-sm font-semibold text-primary hover:underline"
+            >
+              Edit book details
+            </button>
+
+            {book.total_pages > 0 && (
+              <div className="mt-4">
+                <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                  <span>
+                    {book.current_page}/{book.total_pages} pages
+                  </span>
+                  <span>{percent}%</span>
                 </div>
-              )}
+                <div className="h-[14px] bg-[#eef1ff] rounded-[14px] overflow-hidden">
+                  <div
+                    className="h-full bg-primary transition-all"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* PRIMARY ACTION */}
+        <Button
+          className="w-full h-[56px] text-lg font-bold"
+          onClick={() => {
+            if (!book.total_pages) {
+              toast({
+                title: "Missing page count",
+                description:
+                  "Add total pages before logging progress.",
+                variant: "destructive",
+              });
+              return;
+            }
+            setShowProgressModal(true);
+          }}
+        >
+          Log Reading
+        </Button>
+
+        <hr />
+
+        {/* DESCRIPTION (HARDCODED) */}
+        <p className="text-sm leading-relaxed text-[#444]">
+          A bleak and unsettling vision of a totalitarian future where
+          truth is mutable, surveillance is constant, and rebellion
+          begins quietly — in thought.
+        </p>
+
+        <hr />
+
+        {/* TIMELINE */}
+        <div>
+          <div className="text-xs font-bold uppercase text-muted-foreground mb-2">
+            Recent activity
+          </div>
+
+          <ScrollArea className="max-h-[260px] pr-2">
+            <div className="flex flex-col gap-4">
+              {timeline.map((entry) => (
+                <TimelineItem key={entry.id} entry={entry} />
+              ))}
             </div>
           </ScrollArea>
-        </DialogContent>
-      </Dialog>
+        </div>
 
+        <hr />
+
+        {/* READING STATS (HARDCODED) */}
+        <div>
+          <div className="text-xs font-bold uppercase text-muted-foreground mb-3">
+            Reading stats
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <strong>3h 40m</strong>
+              <span className="block text-xs text-muted-foreground">
+                Total time
+              </span>
+            </div>
+            <div>
+              <strong>24 min</strong>
+              <span className="block text-xs text-muted-foreground">
+                Avg session
+              </span>
+            </div>
+            <div>
+              <strong>2.1</strong>
+              <span className="block text-xs text-muted-foreground">
+                Pages / min
+              </span>
+            </div>
+            <div>
+              <strong>4 days</strong>
+              <span className="block text-xs text-muted-foreground">
+                Est. finish
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* MODALS */}
       <UpdateProgressModal
         open={showProgressModal}
         onOpenChange={setShowProgressModal}
@@ -330,9 +274,8 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
         currentPage={book.current_page}
         totalPages={book.total_pages}
         onUpdate={() => {
-          fetchBookDetails();
-          fetchTimeline();
-          onUpdate();
+          setRefreshKey((k) => k + 1);
+          onUpdate?.();
         }}
       />
 
@@ -340,9 +283,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
         open={showNoteModal}
         onOpenChange={setShowNoteModal}
         bookId={bookId}
-        onUpdate={() => {
-          fetchTimeline();
-        }}
+        onUpdate={fetchTimeline}
       />
 
       <CompleteBookModal
@@ -351,13 +292,14 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
         bookId={bookId}
         totalPages={book.total_pages}
         onUpdate={() => {
-          fetchBookDetails();
-          fetchTimeline();
-          onUpdate();
+          setRefreshKey((k) => k + 1);
+          onUpdate?.();
         }}
       />
 
       <EditBookModal
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
         bookId={bookId}
         isbn={book.isbn}
         currentData={{
@@ -366,11 +308,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
           total_pages: book.total_pages,
           genres: book.genres,
         }}
-        open={showEditModal}
-        onOpenChange={setShowEditModal}
-        onSave={() => {
-          setRefreshKey(prev => prev + 1);
-        }}
+        onSave={() => setRefreshKey((k) => k + 1)}
       />
     </>
   );

@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import AvatarCustomization from "./pages/AvatarCustomization";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import BookDetailPage from "./pages/BookDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/book/:bookId" element={<BookDetailPage />} />
           <Route path="/customize-avatar" element={<AvatarCustomization />} />
           <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
