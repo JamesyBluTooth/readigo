@@ -1,13 +1,12 @@
 import { BookMarked, Home, Library, User, Settings, Trophy, Users, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NavLink } from "@/components/NavLink";
 
 interface SidebarProps {
-  activeTab: "dashboard" | "books" | "profile" | "challenge-history" | "social" | "settings";
-  onTabChange: (tab: "dashboard" | "books" | "profile" | "challenge-history" | "social" | "settings") => void;
   onSignOut: () => void;
 }
 
-export const Sidebar = ({ activeTab, onTabChange, onSignOut }: SidebarProps) => {
+export const Sidebar = ({ onSignOut }: SidebarProps) => {
   return (
     <aside className="hidden lg:flex flex-col w-[220px] h-screen bg-card border-r border-border p-4 justify-between overflow-hidden">
       <div className="flex items-center gap-2 mb-8 px-2">
@@ -18,83 +17,59 @@ export const Sidebar = ({ activeTab, onTabChange, onSignOut }: SidebarProps) => 
       </div>
 
       <nav className="flex flex-col gap-1">
-        <button
-          onClick={() => onTabChange("dashboard")}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-            activeTab === "dashboard"
-              ? "bg-muted text-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          )}
+        <NavLink
+          to="/dashboard"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          activeClassName="bg-muted text-foreground shadow-sm"
         >
           <Home className="w-5 h-5" />
           <span className="font-medium">Dashboard</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("books")}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-            activeTab === "books"
-              ? "bg-muted text-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          )}
+        <NavLink
+          to="/books"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          activeClassName="bg-muted text-foreground shadow-sm"
         >
           <Library className="w-5 h-5" />
           <span className="font-medium">Books</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("challenge-history")}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-            activeTab === "challenge-history"
-              ? "bg-muted text-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          )}
+        <NavLink
+          to="/challenge-history"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          activeClassName="bg-muted text-foreground shadow-sm"
         >
           <Trophy className="w-5 h-5" />
           <span className="font-medium">Challenges</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("social")}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-            activeTab === "social"
-              ? "bg-muted text-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          )}
+        <NavLink
+          to="/social"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          activeClassName="bg-muted text-foreground shadow-sm"
         >
           <Users className="w-5 h-5" />
           <span className="font-medium">Friends</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("profile")}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-            activeTab === "profile"
-              ? "bg-muted text-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          )}
+        <NavLink
+          to="/profile"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          activeClassName="bg-muted text-foreground shadow-sm"
         >
           <User className="w-5 h-5" />
           <span className="font-medium">Profile</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("settings")}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-            activeTab === "settings"
-              ? "bg-muted text-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          )}
+        <NavLink
+          to="/settings"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          activeClassName="bg-muted text-foreground shadow-sm"
         >
           <Settings className="w-5 h-5" />
           <span className="font-medium">Settings</span>
-        </button>
+        </NavLink>
       </nav>
 
       <button

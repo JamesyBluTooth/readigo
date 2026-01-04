@@ -1,70 +1,59 @@
 import { Home, Library, User, Trophy, Users, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NavLink } from "@/components/NavLink";
 
 interface MobileNavProps {
-  activeTab: "dashboard" | "books" | "profile" | "challenge-history" | "social" | "settings";
-  onTabChange: (tab: "dashboard" | "books" | "profile" | "challenge-history" | "social" | "settings") => void;
   onSignOut: () => void;
 }
 
-export const MobileNav = ({ activeTab, onTabChange, onSignOut }: MobileNavProps) => {
+export const MobileNav = ({ onSignOut }: MobileNavProps) => {
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t-2 border-border shadow-lg z-50">
       <div className="flex justify-around items-center py-3">
-        <button
-          onClick={() => onTabChange("dashboard")}
-          className={cn(
-            "flex flex-col items-center gap-1 transition-colors",
-            activeTab === "dashboard" ? "text-primary" : "text-muted-foreground"
-          )}
+        <NavLink
+          to="/dashboard"
+          className="flex flex-col items-center gap-1 transition-colors text-muted-foreground"
+          activeClassName="text-primary"
         >
           <Home className="w-6 h-6" />
           <span className="text-xs font-medium">Home</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("books")}
-          className={cn(
-            "flex flex-col items-center gap-1 transition-colors",
-            activeTab === "books" ? "text-primary" : "text-muted-foreground"
-          )}
+        <NavLink
+          to="/books"
+          className="flex flex-col items-center gap-1 transition-colors text-muted-foreground"
+          activeClassName="text-primary"
         >
           <Library className="w-6 h-6" />
           <span className="text-xs font-medium">Library</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("challenge-history")}
-          className={cn(
-            "flex flex-col items-center gap-1 transition-colors",
-            activeTab === "challenge-history" ? "text-primary" : "text-muted-foreground"
-          )}
+        <NavLink
+          to="/challenge-history"
+          className="flex flex-col items-center gap-1 transition-colors text-muted-foreground"
+          activeClassName="text-primary"
         >
           <Trophy className="w-6 h-6" />
           <span className="text-xs font-medium">Challenges</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("social")}
-          className={cn(
-            "flex flex-col items-center gap-1 transition-colors",
-            activeTab === "social" ? "text-primary" : "text-muted-foreground"
-          )}
+        <NavLink
+          to="/social"
+          className="flex flex-col items-center gap-1 transition-colors text-muted-foreground"
+          activeClassName="text-primary"
         >
           <Users className="w-6 h-6" />
           <span className="text-xs font-medium">Friends</span>
-        </button>
+        </NavLink>
 
-        <button
-          onClick={() => onTabChange("profile")}
-          className={cn(
-            "flex flex-col items-center gap-1 transition-colors",
-            activeTab === "profile" ? "text-primary" : "text-muted-foreground"
-          )}
+        <NavLink
+          to="/profile"
+          className="flex flex-col items-center gap-1 transition-colors text-muted-foreground"
+          activeClassName="text-primary"
         >
           <User className="w-6 h-6" />
           <span className="text-xs font-medium">Profile</span>
-        </button>
+        </NavLink>
 
         <button
           onClick={onSignOut}
