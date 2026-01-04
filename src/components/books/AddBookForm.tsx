@@ -29,6 +29,9 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
     });
   }, []);
 
+  const isSheetOpen = !!previewBook;
+
+
   const handleSearch = async () => {
     if (!isbn.trim()) return;
     
@@ -169,125 +172,141 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
 
   return (
     <div className="space-y-4">
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <div className="flex-1">
-          <Label htmlFor="isbn" className="sr-only">ISBN</Label>
-          <Input
-            id="isbn"
-            placeholder="Enter ISBN (e.g., 9780545010221)"
-            value={isbn}
-            onChange={(e) => {
-              setIsbn(e.target.value);
-              if (previewBook) {
-                setPreviewBook(null);
-                setCommunityEdit(null);
-                setUseCommunityEdit(null);
-              }
-            }}
-            required
-            disabled={loading}
-          />
-        </div>
-        <Button type="submit" disabled={loading || needsCommunityEditChoice}>
-          <Search className="w-4 h-4 mr-2" />
-          {loading ? "Searching..." : previewBook ? "Add Book" : "Search"}
-        </Button>
-        {previewBook && (
-          <Button type="button" variant="outline" onClick={handleReset}>
-            Cancel
-          </Button>
-        )}
-      </form>
+      <form onSubmit={handleSubmit}>
+  <div className="bg-card rounded-lg p-4 shadow-[0_6px_0_theme(colors.border)] mb-4">
+    <Label
+      htmlFor="isbn"
+      className="block font-bold mb-1.5"
+    >
+      Enter ISBN
+    </Label>
 
-      {previewBook && (
-        <div className="space-y-4">
-          {/* Community Edit Comparison */}
-          {communityEdit && useCommunityEdit === null && (
-            <CommunityEditComparison
-              apiData={previewBook}
-              communityEdit={communityEdit}
-              onAccept={handleAcceptCommunityEdit}
-              onReject={handleRejectCommunityEdit}
-              loading={loading}
-            />
-          )}
+    <div className="flex gap-2.5">
+      <Input
+        id="isbn"
+        placeholder="9780141036144"
+        inputMode="numeric"
+        value={isbn}
+        onChange={(e) => {
+          setIsbn(e.target.value);
+          if (previewBook) {
+            setPreviewBook(null);
+            setCommunityEdit(null);
+            setUseCommunityEdit(null);
+          }
+        }}
+        required
+        disabled={loading}
+        className="flex-1"
+      />
 
-          {/* Book Preview */}
-          <div className="rounded-lg border bg-card p-4">
-            <div className="flex gap-4">
-              {previewBook.cover_url ? (
-                <img
-                  src={useCommunityEdit && communityEdit?.cover_url ? communityEdit.cover_url : previewBook.cover_url}
-                  alt={previewBook.title}
-                  className="w-16 h-24 object-cover rounded shadow-sm"
-                />
-              ) : (
-                <div className="w-16 h-24 bg-muted rounded flex items-center justify-center">
-                  <span className="text-xs text-muted-foreground">No cover</span>
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <h4 className="font-semibold truncate">
-                  {useCommunityEdit && communityEdit?.title ? communityEdit.title : previewBook.title}
-                </h4>
-                <p className="text-sm text-muted-foreground truncate">
-                  {useCommunityEdit && communityEdit?.author 
-                    ? communityEdit.author 
-                    : (previewBook.authors || "Unknown author")}
-                </p>
-                {(useCommunityEdit && communityEdit?.total_pages 
-                  ? communityEdit.total_pages 
-                  : previewBook.page_count) && (
-                  <p className="text-xs text-muted-foreground">
-                    {useCommunityEdit && communityEdit?.total_pages 
-                      ? communityEdit.total_pages 
-                      : previewBook.page_count} pages
-                  </p>
-                )}
-                
-                <div className="mt-2 flex items-center gap-3">
-                  {useCommunityEdit ? (
-                    <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                      Using community edit
-                    </span>
-                  ) : (
-                    <>
-                      <DataCompletenessIndicator 
-                        missingFields={previewBook.missing_fields} 
-                      />
-                      
-                      {(previewBook.source_google || previewBook.source_open_library) && (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <span>Sources:</span>
-                          {previewBook.source_google && (
-                            <span className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">
-                              Google
-                            </span>
-                          )}
-                          {previewBook.source_open_library && (
-                            <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded">
-                              Open Library
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
+      <Button
+        type="submit"
+        size="sm"
+        disabled={loading || needsCommunityEditChoice}
+        className="flex items-center gap-1.5"
+      >
+        <Search className="w-5 h-5" />
+        {loading ? "Searching…" : previewBook ? "Search" : "Search"}
+      </Button>
+    </div>
 
-                {!useCommunityEdit && previewBook.missing_fields.length > 0 && (
-                  <div className="mt-2 flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400">
-                    <AlertTriangle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                    <span>
-                      Some details missing. You can edit them after adding to help improve data quality.
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+    <small className="block mt-2 text-xs text-muted-foreground">
+      ISBN-10 or ISBN-13 — no judgement, both welcome.
+    </small>
+  </div>
+
+  {previewBook && (
+    <div className="flex gap-2">
+    </div>
+  )}
+</form>
+
+
+      {/* BACKDROP */}
+<div
+  className={`fixed inset-0 bg-black/35 z-50 transition-opacity duration-200
+    ${isSheetOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+  `}
+  onClick={handleReset}
+/>
+
+{/* BOTTOM SHEET */}
+<div
+  className={`fixed left-0 right-0 bottom-0 z-[51] bg-card rounded-t-lg
+    transform transition-transform duration-300
+    ${isSheetOpen ? "translate-y-0" : "translate-y-full"}
+  `}
+>
+  {/* Handle */}
+  <div className="w-11 h-1.5 bg-gray-300 rounded-full mx-auto my-2.5" />
+
+  <div className="p-6 space-y-4">
+    {/* Header */}
+    <div className="flex gap-4">
+      {previewBook?.cover_url ? (
+        <img
+          src={previewBook.cover_url}
+          alt={previewBook.title}
+          className="w-[72px] h-[108px] object-cover rounded-sm bg-muted"
+        />
+      ) : (
+        <div className="w-[72px] h-[108px] rounded-sm bg-muted grid place-items-center text-muted-foreground font-bold">
+          ?
         </div>
       )}
+
+      <div className="min-w-0">
+        <h2 className="text-lg font-semibold truncate">
+          {previewBook?.title || "Unknown title"}
+        </h2>
+        <p className="text-sm text-muted-foreground truncate">
+          {previewBook?.authors || "Unknown author"}
+        </p>
+        {previewBook?.page_count && (
+          <small className="text-xs text-muted-foreground">
+            {previewBook.page_count} pages
+          </small>
+        )}
+      </div>
+    </div>
+
+    {/* Description */}
+    {previewBook?.description && (
+      <p className="text-sm leading-relaxed text-foreground/80">
+        {previewBook.description}
+      </p>
+    )}
+
+    {/* Warnings / completeness */}
+    {!useCommunityEdit && previewBook?.missing_fields.length > 0 && (
+      <div className="flex items-start gap-2 text-xs text-amber-600">
+        <AlertTriangle className="w-4 h-4 mt-0.5" />
+        <span>
+          Some details are missing. You can edit them later to improve data quality.
+        </span>
+      </div>
+    )}
+
+    {/* Actions */}
+    <div className="flex flex-col gap-2 pt-2">
+      <Button
+        onClick={handleAddBook}
+        disabled={loading || needsCommunityEditChoice}
+      >
+        Add to Library
+      </Button>
+
+      <Button
+        variant="secondary"
+        onClick={handleReset}
+      >
+        Cancel
+      </Button>
+    </div>
+  </div>
+</div>
+
     </div>
   );
 };

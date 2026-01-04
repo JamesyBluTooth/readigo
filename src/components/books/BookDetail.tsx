@@ -188,7 +188,6 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
             <div className="flex items-center justify-between">
               <DialogTitle className="text-2xl">{book.title}</DialogTitle>
               <Button
-                variant="ghost"
                 size="sm"
                 onClick={() => setShowEditModal(true)}
               >
@@ -299,7 +298,7 @@ export const BookDetail = ({ bookId, open, onOpenChange, onUpdate }: BookDetailP
                 </Button>
               </>
             ) : (
-              <Button onClick={handleMarkIncomplete} variant="outline" className="w-full">
+              <Button onClick={handleMarkIncomplete} className="w-full">
                 Mark as Incomplete
               </Button>
             )}
