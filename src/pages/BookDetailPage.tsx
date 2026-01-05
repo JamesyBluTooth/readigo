@@ -12,13 +12,12 @@ export default function BookDetailPage() {
     <div className="min-h-screen bg-[#f7f9ff]">
       {/* Back link – civilised, expected */}
       <div className="max-w-[560px] mx-auto p-4">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="mb-3"
-        >
+        <button
+              onClick={() => navigate(-1)}
+              className="mt-1 text-sm font-semibold text-primary hover:underline"
+            >
           ← Back to library
-        </Button>
+        </button>
       </div>
 
       <div className="max-w-[560px] mx-auto px-4 pb-16">
