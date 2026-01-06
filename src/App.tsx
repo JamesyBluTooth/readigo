@@ -7,6 +7,13 @@ import Index from "./pages/Index";
 import AvatarCustomization from "./pages/AvatarCustomization";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import BookDetailPage from "./pages/BookDetailPage";
+import { Dashboard } from "./pages/Dashboard";
+import { Books } from "./pages/Books";
+import Profile from "./pages/Profile";
+import ChallengeHistory from "./pages/ChallengeHistory";
+import { Social } from "./pages/Social";
+import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
@@ -17,9 +24,19 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Index />}>
+            <Route index element={<Navigate to="/books" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="books" element={<Books />} />
+            <Route path="challenge-history" element={<ChallengeHistory />} />
+            <Route path="social" element={<Social />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
+
+            <Route path="book/:bookId" element={<BookDetailPage />} />
+          </Route>
+
           <Route path="/customize-avatar" element={<AvatarCustomization />} />
-          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

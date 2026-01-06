@@ -122,7 +122,6 @@ export const CompleteBookModal = ({
           <div className="flex gap-2">
             <Button
               type="button"
-              variant="outline"
               onClick={handleSubmit}
               disabled={loading}
               className="flex-1"

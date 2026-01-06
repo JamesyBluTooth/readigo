@@ -12,11 +12,11 @@ import { RightPanel } from "@/components/RightPanel";
 import { MobileNav } from "@/components/MobileNav";
 import { DailyChallenge } from "@/components/dashboard/DailyChallenge";
 import { FriendFeed } from "@/components/dashboard/FriendFeed";
+import { Outlet } from "react-router-dom";
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "books" | "profile" | "challenge-history" | "social" | "settings">("books");
 
   useEffect(() => {
     const {
@@ -108,32 +108,23 @@ const Index = () => {
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} onSignOut={handleSignOut} />
+      <Sidebar onSignOut={handleSignOut} />
 
       <main className="flex-1 overflow-y-auto h-screen pb-20 lg:pb-0">
         <div className="container mx-auto px-4 py-6 lg:py-8 max-w-6xl">
-          {activeTab === "dashboard" && <Dashboard />}
-          {activeTab === "books" && <Books />}
-          {activeTab === "challenge-history" && <ChallengeHistory />}
-          {activeTab === "social" && <Social />}
-          {activeTab === "profile" && <Profile />}
-          {activeTab === "settings" && <Settings />}
+          <Outlet />
         </div>
 
         {/* Mobile: Show right panel content below main content */}
         <div className="lg:hidden container mx-auto px-4 pb-6 space-y-4">
           <DailyChallenge />
-          {activeTab === "social" && <FriendFeed />}
+          <FriendFeed />
         </div>
       </main>
 
       <RightPanel />
 
-      <MobileNav 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab}
-        onSignOut={handleSignOut}
-      />
+      <MobileNav onSignOut={handleSignOut} />
     </div>
   );
 };

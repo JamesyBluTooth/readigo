@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { Clock, BookOpen, FileText, Timer } from "lucide-react";
-import { TrophyAnimation } from "./TrophyAnimation";
 
 interface DailyChallenge {
   id: string;
@@ -252,14 +251,7 @@ export const DailyChallenge = () => {
 
   const progressPercentage = Math.min((challenge.current_progress / challenge.target_value) * 100, 100);
 
-  return (
-    <>
-      {showAnimation && (
-        <TrophyAnimation
-          success={animationSuccess}
-          onComplete={() => setShowAnimation(false)}
-        />
-      )}
+  return (<>
 
       <div className="bg-card border-2 border-border rounded-2xl p-6 shadow-md">
         <div className="flex items-center gap-2 mb-4">
