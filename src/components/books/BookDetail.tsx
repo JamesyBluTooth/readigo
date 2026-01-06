@@ -5,7 +5,8 @@ import { BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-import { UpdateProgressModal } from "./UpdateProgressModal";
+import { LogReadingModal } from "./LogReadingModal";
+
 import { AddNoteModal } from "./AddNoteModal";
 import { CompleteBookModal } from "./CompleteBookModal";
 import { EditBookModal } from "./EditBookModal";
@@ -43,7 +44,8 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [showLogReadingModal, setShowLogReadingModal] = useState(false);
+
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -197,7 +199,7 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
               });
               return;
             }
-            setShowProgressModal(true);
+            setShowLogReadingModal(true);
           }}
         >
           Log Reading
@@ -216,17 +218,18 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
 
         {/* TIMELINE */}
         <div>
-          <div className="text-xs font-bold uppercase text-muted-foreground mb-2">
-            Recent activity
-          </div>
+          <div>
+  <div className="text-xs font-bold uppercase text-muted-foreground mb-2">
+    Recent activity
+  </div>
 
-          <ScrollArea className="max-h-[260px] pr-2">
-            <div className="flex flex-col gap-4">
-              {timeline.map((entry) => (
-                <TimelineItem key={entry.id} entry={entry} />
-              ))}
-            </div>
-          </ScrollArea>
+  <div className="flex flex-col gap-4">
+    {timeline.map((entry) => (
+      <TimelineItem key={entry.id} entry={entry} />
+    ))}
+  </div>
+</div>
+
         </div>
 
         <hr />
@@ -267,9 +270,9 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
       </div>
 
       {/* MODALS */}
-      <UpdateProgressModal
-        open={showProgressModal}
-        onOpenChange={setShowProgressModal}
+      <LogReadingModal
+        open={showLogReadingModal}
+        onOpenChange={setShowLogReadingModal}
         bookId={bookId}
         currentPage={book.current_page}
         totalPages={book.total_pages}
@@ -278,6 +281,7 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
           onUpdate?.();
         }}
       />
+
 
       <AddNoteModal
         open={showNoteModal}
