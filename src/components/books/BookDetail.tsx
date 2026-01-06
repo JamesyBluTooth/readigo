@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 import { LogReadingModal } from "./LogReadingModal";
-
 import { AddNoteModal } from "./AddNoteModal";
 import { CompleteBookModal } from "./CompleteBookModal";
 import { EditBookModal } from "./EditBookModal";
@@ -39,13 +37,20 @@ interface TimelineEntry {
   content?: string;
 }
 
+interface ProgressEntry {
+  id: string;
+  pages_read: number;
+  time_spent_minutes: number;
+  created_at: string;
+}
+
 export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
   const [book, setBook] = useState<Book | null>(null);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const [progressEntries, setProgressEntries] = useState<ProgressEntry[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [showLogReadingModal, setShowLogReadingModal] = useState(false);
-
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -82,20 +87,16 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
   };
 
   const fetchTimeline = async () => {
-    const [progress, notes] = await Promise.all([
-      supabase
-        .from("progress_entries")
-        .select("*")
-        .eq("book_id", bookId),
-      supabase
-        .from("notes")
-        .select("*")
-        .eq("book_id", bookId),
+    const [{ data: progress }, { data: notes }] = await Promise.all([
+      supabase.from("progress_entries").select("*").eq("book_id", bookId),
+      supabase.from("notes").select("*").eq("book_id", bookId),
     ]);
+
+    setProgressEntries(progress ?? []);
 
     const items: TimelineEntry[] = [];
 
-    progress.data?.forEach((p) =>
+    progress?.forEach((p) =>
       items.push({
         id: p.id,
         type: "progress",
@@ -105,7 +106,7 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
       })
     );
 
-    notes.data?.forEach((n) =>
+    notes?.forEach((n) =>
       items.push({
         id: n.id,
         type: "note",
@@ -124,6 +125,72 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
   };
 
   if (!book) return null;
+
+  /* =====================
+     READING STATS
+     ===================== */
+
+  const totalMinutes = progressEntries.reduce(
+    (sum, p) => sum + (p.time_spent_minutes || 0),
+    0
+  );
+
+  const totalPagesRead = progressEntries.reduce(
+    (sum, p) => sum + (p.pages_read || 0),
+    0
+  );
+
+  const sessionCount = progressEntries.length;
+
+  const avgSessionMinutes =
+    sessionCount > 0 ? Math.round(totalMinutes / sessionCount) : 0;
+
+  const pagesPerMinute =
+    totalMinutes > 0
+      ? (totalPagesRead / totalMinutes).toFixed(1)
+      : "—";
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const totalTimeLabel =
+    hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+  let estFinishLabel: string = "—";
+
+  if (
+    sessionCount > 1 &&
+    totalPagesRead > 0 &&
+    book.total_pages > book.current_page
+  ) {
+    const timestamps = progressEntries.map((p) =>
+      new Date(p.created_at).getTime()
+    );
+
+    const daysActive =
+      Math.max(
+        1,
+        (Math.max(...timestamps) - Math.min(...timestamps)) /
+          (1000 * 60 * 60 * 24)
+      );
+
+    const sessionsPerDay = Math.min(
+      Math.max(sessionCount / daysActive, 0.1),
+      5
+    );
+
+    const avgPagesPerSession = totalPagesRead / sessionCount;
+    const pagesRemaining =
+      book.total_pages - book.current_page;
+
+    const sessionsNeeded =
+      pagesRemaining / avgPagesPerSession;
+
+    const daysRemaining = Math.ceil(
+      sessionsNeeded / sessionsPerDay
+    );
+
+    estFinishLabel = `${daysRemaining} days`;
+  }
 
   const percent =
     book.total_pages > 0
@@ -157,7 +224,7 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
             )}
 
             <div className="mt-1 text-sm font-semibold text-primary">
-              Currently reading · Last read today
+              Currently reading
             </div>
 
             <button
@@ -207,34 +274,22 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
 
         <hr />
 
-        {/* DESCRIPTION (HARDCODED) */}
-        <p className="text-sm leading-relaxed text-[#444]">
-          A bleak and unsettling vision of a totalitarian future where
-          truth is mutable, surveillance is constant, and rebellion
-          begins quietly — in thought.
-        </p>
-
-        <hr />
-
         {/* TIMELINE */}
         <div>
-          <div>
-  <div className="text-xs font-bold uppercase text-muted-foreground mb-2">
-    Recent activity
-  </div>
+          <div className="text-xs font-bold uppercase text-muted-foreground mb-2">
+            Recent activity
+          </div>
 
-  <div className="flex flex-col gap-4">
-    {timeline.map((entry) => (
-      <TimelineItem key={entry.id} entry={entry} />
-    ))}
-  </div>
-</div>
-
+          <div className="flex flex-col gap-4">
+            {timeline.map((entry) => (
+              <TimelineItem key={entry.id} entry={entry} />
+            ))}
+          </div>
         </div>
 
         <hr />
 
-        {/* READING STATS (HARDCODED) */}
+        {/* READING STATS */}
         <div>
           <div className="text-xs font-bold uppercase text-muted-foreground mb-3">
             Reading stats
@@ -242,25 +297,25 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <strong>3h 40m</strong>
+              <strong>{totalTimeLabel}</strong>
               <span className="block text-xs text-muted-foreground">
                 Total time
               </span>
             </div>
             <div>
-              <strong>24 min</strong>
+              <strong>{avgSessionMinutes} min</strong>
               <span className="block text-xs text-muted-foreground">
                 Avg session
               </span>
             </div>
             <div>
-              <strong>2.1</strong>
+              <strong>{pagesPerMinute}</strong>
               <span className="block text-xs text-muted-foreground">
                 Pages / min
               </span>
             </div>
             <div>
-              <strong>4 days</strong>
+              <strong>{estFinishLabel}</strong>
               <span className="block text-xs text-muted-foreground">
                 Est. finish
               </span>
@@ -281,7 +336,6 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
           onUpdate?.();
         }}
       />
-
 
       <AddNoteModal
         open={showNoteModal}

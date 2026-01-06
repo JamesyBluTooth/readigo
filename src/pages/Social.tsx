@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { UserPlus, Trophy, Settings } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { FriendShelf } from "@/components/social/FriendShelf";
 import { AddFriendModal } from "@/components/social/AddFriendModal";
 import { FriendProfileModal } from "@/components/social/FriendProfileModal";
-import { LeaderboardView } from "@/components/social/LeaderboardView";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Social = () => {
   const [myFriendCode, setMyFriendCode] = useState("");
@@ -64,39 +62,23 @@ export const Social = () => {
           </div>
           <div className="flex gap-2">
             <Button
-              variant="outline"
+            variant="secondary"
               size="icon"
               onClick={() => setAddFriendOpen(true)}
             >
               <UserPlus className="w-5 h-5" />
             </Button>
-            <Button variant="outline" size="icon">
-              <Settings className="w-5 h-5" />
-            </Button>
           </div>
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="friends" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="friends">Friend Shelf</TabsTrigger>
-            <TabsTrigger value="leaderboard">
-              <Trophy className="w-4 h-4 mr-2" />
-              Leaderboard
-            </TabsTrigger>
-          </TabsList>
+<div className="space-y-6">
+  <FriendShelf
+    key={refreshKey}
+    onFriendClick={handleFriendClick}
+  />
+</div>
 
-          <TabsContent value="friends" className="space-y-6 mt-6">
-            <FriendShelf 
-              key={refreshKey}
-              onFriendClick={handleFriendClick} 
-            />
-          </TabsContent>
-
-          <TabsContent value="leaderboard" className="mt-6">
-            <LeaderboardView key={refreshKey} />
-          </TabsContent>
-        </Tabs>
       </div>
 
       {/* Modals */}
