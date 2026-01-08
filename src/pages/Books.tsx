@@ -4,6 +4,7 @@ import { AddBookForm } from "@/components/books/AddBookForm";
 import { BookCard } from "@/components/books/BookCard";
 import { BookMarked } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ReadingOverview } from "@/components/books/ReadingOverview";
 
 
 interface Book {
@@ -21,6 +22,22 @@ export const Books = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const totalBooks = books.length;
+
+const finishedBooks = books.filter(b => b.is_completed).length;
+
+const inProgressBooks = books.filter(
+  b => !b.is_completed && b.current_page > 0
+).length;
+
+const mostRecentlyRead = [...books]
+  .filter(b => b.current_page > 0)
+  .sort(
+    (a, b) =>
+      new Date(b.updated_at!).getTime() -
+      new Date(a.updated_at!).getTime()
+  )[0];
 
   useEffect(() => {
     fetchBooks();
@@ -59,6 +76,15 @@ export const Books = () => {
 
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground">My Books</h2>
+            {!loading && books.length > 0 && (
+  <ReadingOverview
+    total={totalBooks}
+    inProgress={inProgressBooks}
+    finished={finishedBooks}
+    mostRecentTitle={mostRecentlyRead?.title}
+  />
+)}
+
             {loading ? (
               <div className="text-center py-12 text-muted-foreground">Loading...</div>
             ) : books.length === 0 ? (
