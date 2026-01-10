@@ -19,7 +19,7 @@ interface LogReadingModalProps {
   bookId: string;
   currentPage: number;
   totalPages: number;
-  onSuccess?: () => void;
+  onUpdate: () => Promise<void>;
 }
 
 export const LogReadingModal = ({
@@ -28,7 +28,7 @@ export const LogReadingModal = ({
   bookId,
   currentPage,
   totalPages,
-  onSuccess,
+  onUpdate,
 }: LogReadingModalProps) => {
   const [pageInput, setPageInput] = useState("");
   const [timeInput, setTimeInput] = useState("");
@@ -91,7 +91,7 @@ export const LogReadingModal = ({
       setShowTime(false);
       setShowNotes(false);
 
-      onSuccess?.();
+      await onUpdate();
       onOpenChange(false);
     } catch (err: any) {
       toast({

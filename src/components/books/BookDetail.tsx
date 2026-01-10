@@ -63,6 +63,21 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookId, refreshKey]);
 
+  /**
+   * AUTO-OPEN COMPLETE MODAL
+   * Opens exactly once when the book is finished
+   */
+  useEffect(() => {
+    if (
+      book &&
+      book.total_pages > 0 &&
+      book.current_page >= book.total_pages &&
+      !book.is_completed
+    ) {
+      setShowCompleteModal(true);
+    }
+  }, [book]);
+
   const fetchBook = async () => {
     const { data, error } = await supabase
       .from("books")
@@ -179,11 +194,9 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
     );
 
     const avgPagesPerSession = totalPagesRead / sessionCount;
-    const pagesRemaining =
-      book.total_pages - book.current_page;
+    const pagesRemaining = book.total_pages - book.current_page;
 
-    const sessionsNeeded =
-      pagesRemaining / avgPagesPerSession;
+    const sessionsNeeded = pagesRemaining / avgPagesPerSession;
 
     const daysRemaining = Math.ceil(
       sessionsNeeded / sessionsPerDay
@@ -331,8 +344,9 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
         bookId={bookId}
         currentPage={book.current_page}
         totalPages={book.total_pages}
-        onUpdate={() => {
-          setRefreshKey((k) => k + 1);
+        onUpdate={async () => {
+          await fetchBook();
+          await fetchTimeline();
           onUpdate?.();
         }}
       />
