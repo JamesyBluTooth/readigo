@@ -12,11 +12,13 @@ import { RightPanel } from "@/components/RightPanel";
 import { MobileNav } from "@/components/MobileNav";
 import { DailyChallenge } from "@/components/dashboard/DailyChallenge";
 import { FriendFeed } from "@/components/dashboard/FriendFeed";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import Landing from "./Landing";
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const {
@@ -103,7 +105,14 @@ const Index = () => {
   };
 
   if (!session) {
-    return <AuthPage />;
+    const params = new URLSearchParams(location.search);
+    const isLoggingIn = params.get("isLoggingIn") === "true";
+    const isSigningUp = params.get("isSigningUp") === "true";
+
+    if (isLoggingIn) return <AuthPage initialMode="login" />;
+    if (isSigningUp) return <AuthPage initialMode="signup" />;
+
+    return <Landing />;
   }
 
   return (

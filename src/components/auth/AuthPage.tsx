@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +9,14 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { BookMarked } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export const AuthPage = () => {
+export const AuthPage = ({ initialMode }: { initialMode?: "login" | "signup" }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (initialMode === "signup") setIsLogin(false);
+    if (initialMode === "login") setIsLogin(true);
+  }, [initialMode]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,7 +94,13 @@ export const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="relative min-h-screen flex items-center justify-center bg-background p-4 fade-in">
+        <button
+          onClick={() => navigate('/')}
+          className="absolute top-4 left-4 text-sm font-semibold text-primary hover:underline"
+        >
+          ← Back
+        </button>
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
