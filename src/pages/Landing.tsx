@@ -8,7 +8,9 @@ const goToLogin = () => {
 };
 
 const goToSignup = () => {
-  navigate("/?isSigningUp=true");
+  setTimeout(() => {
+    navigate("/?isSigningUp=true");
+  }, 150);
 };
 
   return (
