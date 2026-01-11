@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom";
 export const HomePage = () => {
   const navigate = useNavigate();
 
+const goToLogin = () => {
+  navigate("/?isLoggingIn=true");
+};
+
+const goToSignup = () => {
+  navigate("/?isSigningUp=true");
+};
+
   return (
     <div className="min-h-screen bg-[#f7f9ff] text-[#3c3c3c]">
       {/* HEADER */}
@@ -15,14 +23,14 @@ export const HomePage = () => {
           <nav className="flex items-center gap-3">
 
             <button
-              onClick={() => navigate("/login")}
+              onClick={goToLogin}
               className="px-8 py-2 text-sm font-bold rounded-xl bg-white text-[#3c3c3c] border border-gray-200"
             >
               Log in
             </button>
 
             <button 
-  onClick={() => navigate("/signup")} 
+  onClick={goToSignup} 
   className="px-12 py-2 text-sm font-bold border-2 border-solid border-[#4971e5] rounded-xl bg-[#517efe] text-white shadow-[0_6px_0_#4971e5] active:translate-y-[3px] active:shadow-[0_2px_0_#4971e5]"
 >
   Create Account
@@ -46,14 +54,14 @@ export const HomePage = () => {
 
           <div className="mt-5 flex flex-col md:flex-row gap-3">
             <button
-              onClick={() => navigate("/signup")}
+              onClick={goToSignup}
               className="flex-1 px-4 py-3 font-bold rounded-2xl bg-[#517efe] text-white shadow-[0_6px_0_#4971e5] active:translate-y-[3px] active:shadow-[0_2px_0_#4971e5]"
             >
               Create an account
             </button>
 
             <button
-              onClick={() => navigate("/login")}
+              onClick={goToLogin}
               className="flex-1 px-4 py-3 font-bold rounded-2xl border border-gray-200 bg-white"
             >
               Log in
@@ -137,7 +145,7 @@ export const HomePage = () => {
           </strong>
 
           <button
-            onClick={() => navigate("/signup")}
+            onClick={goToSignup}
             className="px-6 py-3 font-bold rounded-2xl bg-[#517efe] text-white shadow-[0_6px_0_#4971e5] active:translate-y-[3px] active:shadow-[0_2px_0_#4971e5]"
           >
             Create an account
