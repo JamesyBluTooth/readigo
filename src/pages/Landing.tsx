@@ -1,180 +1,149 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 
-const COLORS = {
-  bg: "#f7f9ff",
-  card: "#ffffff",
-  border: "#e5e7eb",
-  text: "#3c3c3c",
-  muted: "#6b6b6b",
-};
-
-export default function Landing(): JSX.Element {
+export const HomePage = () => {
   const navigate = useNavigate();
-  const openLogin = () => navigate("/?isLoggingIn=true");
-  const openSignup = () => navigate("/?isSigningUp=true");
 
   return (
-    <main
-      className="fade-in"
-      style={{
-        maxWidth: "min(92vw, 560px)",
-        margin: "0 auto",
-        padding: "clamp(1.25rem, 4vw, 2rem) 1rem 5rem",
-        background: COLORS.bg,
-        color: COLORS.text,
-        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      }}
-    >
+    <div className="min-h-screen bg-[#f7f9ff] text-[#3c3c3c]">
       {/* HEADER */}
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "1rem",
-          marginBottom: "clamp(1.5rem, 5vw, 2rem)",
-          flexWrap: "wrap",
-        }}
-      >
-        <strong style={{ fontSize: "clamp(1.05rem, 3vw, 1.2rem)" }}>📘 Readigo</strong>
+      <header className="bg-[#517efe] shadow-[0_4px_0_#4971e5]">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between text-white">
+          <div className="text-xl font-extrabold tracking-wide">
+            Readigo
+          </div>
 
-        <nav style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-          <Button variant="secondary" onClick={openLogin}>
-            Log in
-          </Button>
-          <Button size="lg" onClick={openSignup}>
-            Create account
-          </Button>
-        </nav>
+          <nav className="flex items-center gap-3">
+
+            <button
+              onClick={() => navigate("/login")}
+              className="px-8 py-2 text-sm font-bold rounded-xl bg-white text-[#3c3c3c] border border-gray-200"
+            >
+              Log in
+            </button>
+
+            <button 
+  onClick={() => navigate("/signup")} 
+  className="px-12 py-2 text-sm font-bold border-2 border-solid border-[#4971e5] rounded-xl bg-[#517efe] text-white shadow-[0_6px_0_#4971e5] active:translate-y-[3px] active:shadow-[0_2px_0_#4971e5]"
+>
+  Create Account
+</button>
+          </nav>
+        </div>
       </header>
 
-      {/* HERO */}
-      <section
-        style={{
-          background: COLORS.card,
-          borderRadius: 22,
-          padding: "clamp(1.1rem, 4vw, 1.4rem)",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.2rem",
-          boxShadow: `0 6px 0 ${COLORS.border}`,
-        }}
-      >
-        <div>
-          <h1 style={{ fontSize: "clamp(1.4rem, 4vw, 1.8rem)", marginBottom: "0.8rem" }}>
+      {/* PAGE */}
+      <main className="max-w-xl md:max-w-3xl mx-auto px-4 py-8 space-y-8">
+        {/* HERO */}
+        <section className="bg-white rounded-3xl p-6 shadow-[0_6px_0_#e5e7eb]">
+          <h1 className="text-2xl font-bold mb-2">
             Reading, made delightfully social.
           </h1>
-          <p style={{ color: COLORS.muted, fontSize: "clamp(0.95rem, 3vw, 1rem)", lineHeight: 1.5 }}>
-            Track your reading, build the habit, and see what your friends are enjoying — without the noise of social media.
+
+          <p className="text-gray-600 leading-relaxed">
+            Track your reading, build better habits, and enjoy books with friends —
+            without the noise of social media.
           </p>
-        </div>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.6rem",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ width: "100%", maxWidth: 420 }}>
-            <Button className="w-full" onClick={openSignup}>
-              Create an account
-            </Button>
-          </div>
-          <div style={{ width: "100%", maxWidth: 420 }}>
-            <Button variant="secondary" className="w-full" onClick={openLogin}>
-              Log in
-            </Button>
-          </div>
-        </div>
-
-        <small style={{ color: COLORS.muted, fontSize: "0.75rem", textAlign: "center" }}>
-          Free. No ads. No shouting.
-        </small>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section style={{ marginTop: "clamp(1.8rem, 6vw, 2.2rem)" }}>
-        <h1 style={{ fontSize: "clamp(1.35rem, 4vw, 1.6rem)", marginBottom: "1.2rem" }}>
-          How it works
-        </h1>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-          {[
-            { icon: "📚", title: "Add your books", desc: "Search by ISBN or add them manually in seconds." },
-            { icon: "📈", title: "Track your reading", desc: "Log pages, time, and thoughts as you go." },
-            { icon: "👥", title: "Read together", desc: "Follow friends, join challenges, earn achievements." },
-          ].map((item) => (
-            <div
-              key={item.title}
-              style={{
-                background: COLORS.card,
-                borderRadius: 22,
-                padding: "1.2rem",
-                display: "flex",
-                gap: "1rem",
-                flexWrap: "wrap",
-                boxShadow: `0 6px 0 ${COLORS.border}`,
-              }}
+          <div className="mt-5 flex flex-col md:flex-row gap-3">
+            <button
+              onClick={() => navigate("/signup")}
+              className="flex-1 px-4 py-3 font-bold rounded-2xl bg-[#517efe] text-white shadow-[0_6px_0_#4971e5] active:translate-y-[3px] active:shadow-[0_2px_0_#4971e5]"
             >
-              <div
-                style={{
-                  width: "clamp(64px, 18vw, 72px)",
-                  height: "clamp(96px, 27vw, 108px)",
-                  borderRadius: 14,
-                  background: "#e9ecff",
-                  display: "grid",
-                  placeItems: "center",
-                  fontWeight: 700,
-                  color: COLORS.muted,
-                  flexShrink: 0,
-                }}
-              >
-                {item.icon}
+              Create an account
+            </button>
+
+            <button
+              onClick={() => navigate("/login")}
+              className="flex-1 px-4 py-3 font-bold rounded-2xl border border-gray-200 bg-white"
+            >
+              Log in
+            </button>
+          </div>
+
+          <div className="mt-3 text-center text-xs text-gray-500">
+            Free. No ads. No shouting.
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold">
+            How it works
+          </h2>
+
+          {[
+            {
+              icon: "📚",
+              title: "Add your books",
+              desc: "Search by ISBN or add them manually in seconds.",
+            },
+            {
+              icon: "📈",
+              title: "Track your reading",
+              desc: "Log pages, time, and thoughts as you go.",
+            },
+            {
+              icon: "👥",
+              title: "Read together",
+              desc: "Follow friends, join challenges, stay motivated.",
+            },
+          ].map((step) => (
+            <div
+              key={step.title}
+              className="bg-white rounded-3xl p-5 flex gap-4 items-center shadow-[0_6px_0_#e5e7eb]"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-[#e9ecff] flex items-center justify-center text-2xl flex-shrink-0">
+                {step.icon}
               </div>
 
-              <div style={{ flex: "1 1 180px" }}>
-                <h2 style={{ margin: 0, fontSize: "1.05rem" }}>{item.title}</h2>
-                <p style={{ margin: 0, fontSize: "0.9rem", color: COLORS.muted }}>
-                  {item.desc}
+              <div>
+                <strong className="block font-semibold">
+                  {step.title}
+                </strong>
+                <p className="text-sm text-gray-600 mt-1">
+                  {step.desc}
                 </p>
               </div>
             </div>
           ))}
-        </div>
-      </section>
+        </section>
 
-      {/* FINAL CTA */}
-      <section
-        style={{
-          background: COLORS.card,
-          borderRadius: 22,
-          padding: "1.2rem",
-          marginTop: "1.6rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.8rem",
-          boxShadow: `0 6px 0 ${COLORS.border}`,
-        }}
-      >
-        <strong style={{ fontSize: "1.1rem", textAlign: "center" }}>
-          Ready to turn reading into a habit?
-        </strong>
+        {/* OVERVIEW STRIP */}
+        <section className="rounded-3xl border-2 border-gray-200 bg-gradient-to-b from-[#f2f5ff] to-white p-5 shadow-[0_6px_0_#e5e7eb]">
+          <div className="text-xs font-bold tracking-wider text-gray-500 uppercase mb-3">
+            Why Readigo?
+          </div>
 
-        <Button onClick={openSignup}>Create an account</Button>
-        <Button variant="secondary" onClick={openLogin}>
-          Log in
-        </Button>
-      </section>
+          <div className="flex gap-3">
+            {[
+              { icon: "📊", label: "Smart analytics" },
+              { icon: "🏆", label: "Motivating goals" },
+              { icon: "🤝", label: "Social, not noisy" },
+            ].map((item) => (
+              <div key={item.label} className="flex-1 text-center">
+                <div className="text-xl mb-1">{item.icon}</div>
+                <span className="text-xs text-gray-600">
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
 
-      {/* FOOTER */}
-      <footer style={{ textAlign: "center", paddingTop: "2.5rem", color: COLORS.muted }}>
-        <strong style={{ display: "block", color: COLORS.text }}>Readigo</strong>
-        <span>About · Privacy · Terms · Contact</span>
-      </footer>
-    </main>
+        {/* FINAL CTA */}
+        <section className="bg-white rounded-3xl p-6 text-center shadow-[0_6px_0_#e5e7eb]">
+          <strong className="block text-lg mb-4">
+            Ready to turn reading into a habit?
+          </strong>
+
+          <button
+            onClick={() => navigate("/signup")}
+            className="px-6 py-3 font-bold rounded-2xl bg-[#517efe] text-white shadow-[0_6px_0_#4971e5] active:translate-y-[3px] active:shadow-[0_2px_0_#4971e5]"
+          >
+            Create an account
+          </button>
+        </section>
+      </main>
+    </div>
   );
-}
+};

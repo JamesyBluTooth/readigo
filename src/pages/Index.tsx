@@ -13,7 +13,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { DailyChallenge } from "@/components/dashboard/DailyChallenge";
 import { FriendFeed } from "@/components/dashboard/FriendFeed";
 import { Outlet, useLocation } from "react-router-dom";
-import Landing from "./Landing";
+import { HomePage } from "@/pages/Landing";
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
@@ -112,7 +112,7 @@ const Index = () => {
     if (isLoggingIn) return <AuthPage initialMode="login" />;
     if (isSigningUp) return <AuthPage initialMode="signup" />;
 
-    return <Landing />;
+    return <HomePage />;
   }
 
   return (
