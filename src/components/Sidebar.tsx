@@ -61,15 +61,6 @@ export const Sidebar = ({ onSignOut }: SidebarProps) => {
           <User className="w-5 h-5" />
           <span className="font-medium">Profile</span>
         </NavLink>
-
-        <NavLink
-          to="/settings"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          activeClassName="bg-muted text-foreground shadow-sm"
-        >
-          <Settings className="w-5 h-5" />
-          <span className="font-medium">Settings</span>
-        </NavLink>
       </nav>
 
       <button
