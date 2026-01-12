@@ -13,7 +13,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { DailyChallenge } from "@/components/dashboard/DailyChallenge";
 import { FriendFeed } from "@/components/dashboard/FriendFeed";
 import { Outlet, useLocation } from "react-router-dom";
-import { HomePage } from "@/pages/Landing";
+import { HomePage } from "@/pages/Home";
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
