@@ -6,9 +6,7 @@ import { Search, AlertTriangle } from "lucide-react";
 import { lookupBookByISBN, CanonicalBook } from "@/lib/hybridBookLookup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { DataCompletenessIndicator } from "./DataCompletenessIndicator";
 import { getCommunityEdit, acceptCommunityEdit, BookUserEdit } from "@/lib/bookUserEdits";
-import { CommunityEditComparison } from "./CommunityEditComparison";
 
 interface AddBookFormProps {
   onBookAdded: () => void;

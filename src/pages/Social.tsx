@@ -6,6 +6,7 @@ import { UserPlus } from "lucide-react";
 import { FriendShelf } from "@/components/social/FriendShelf";
 import { AddFriendModal } from "@/components/social/AddFriendModal";
 import { FriendProfileModal } from "@/components/social/FriendProfileModal";
+import { FriendCodeCard } from "@/components/social/FriendCodeCard";
 
 export const Social = () => {
   const [myFriendCode, setMyFriendCode] = useState("");
@@ -60,6 +61,7 @@ export const Social = () => {
             <h1 className="text-3xl font-bold text-foreground">Friends</h1>
             <p className="text-muted-foreground">Connect with fellow readers</p>
           </div>
+          
           <div className="flex gap-2">
             <Button
             variant="secondary"
@@ -72,13 +74,15 @@ export const Social = () => {
         </div>
 
         {/* Main Content */}
-<div className="space-y-6">
+<div className="space-y-8">
+  <div className="max-w-4xl mx-auto space-y-8">
+  <FriendCodeCard friendCode={myFriendCode} />
   <FriendShelf
     key={refreshKey}
     onFriendClick={handleFriendClick}
   />
 </div>
-
+</div>
       </div>
 
       {/* Modals */}

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Copy, Search, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { FriendCodeCard } from "./FriendCodeCard";
 
 interface AddFriendModalProps {
   open: boolean;
@@ -122,21 +123,6 @@ export const AddFriendModal = ({
     toast.success("Friend code copied!");
   };
 
-  const handleShareCode = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "My Bookmarked Friend Code",
-          text: `Add me on Bookmarked! My friend code is: ${myFriendCode}`
-        });
-      } catch (error) {
-        console.error("Error sharing:", error);
-      }
-    } else {
-      handleCopyCode();
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -191,23 +177,7 @@ export const AddFriendModal = ({
             )}
           </div>
 
-          {/* My Code Section */}
-          <div className="border-t pt-6">
-            <h4 className="font-semibold mb-3">Your Friend Code</h4>
-            <div className="flex gap-2">
-              <Input
-                value={myFriendCode}
-                readOnly
-                className="font-mono text-lg font-bold text-center"
-              />
-              <Button variant="outline" size="icon" onClick={handleCopyCode}>
-                <Copy className="w-4 h-4" />
-              </Button>
-              <Button variant="outline" size="icon" onClick={handleShareCode}>
-                <Share2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+          <FriendCodeCard friendCode={myFriendCode} />
         </div>
       </DialogContent>
     </Dialog>
