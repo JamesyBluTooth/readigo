@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 import { LogReadingModal } from "./LogReadingModal";
-import { AddNoteModal } from "./AddNoteModal";
 import { CompleteBookModal } from "./CompleteBookModal";
 import { EditBookModal } from "./EditBookModal";
 import { TimelineItem } from "./TimelineItem";
@@ -343,13 +342,6 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
           await fetchTimeline();
           onUpdate?.();
         }}
-      />
-
-      <AddNoteModal
-        open={showNoteModal}
-        onOpenChange={setShowNoteModal}
-        bookId={bookId}
-        onUpdate={fetchTimeline}
       />
 
       <CompleteBookModal
