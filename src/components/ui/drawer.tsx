@@ -30,19 +30,24 @@ const DrawerContent = React.forwardRef<
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-50 flex max-h-[90vh] w-full flex-col rounded-t-[10px] border bg-background overflow-y-auto",
-        className,
-      )}
       {...props}
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-50 flex w-full flex-col rounded-t-[10px] border bg-background overflow-hidden",
+        className
+      )}
+      style={{
+        maxHeight: "90vh",
+        minHeight: "20vh",
+      }}
+      drag="y"
+      dragConstraints={{ top: 0, bottom: 0 }}
+      dragElastic={0.3} // smooth pull feel
     >
       {/* Grab handle */}
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-      
-      {/* Drawer content */}
-      <div className="flex-1">
-        {children}
-      </div>
+      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted cursor-grab" />
+
+      {/* Scrollable content */}
+      <div className="overflow-y-auto flex-1">{children}</div>
     </DrawerPrimitive.Content>
   </DrawerPortal>
 ));
