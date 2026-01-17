@@ -49,8 +49,6 @@ export const TimelineItem = ({ entry }: TimelineItemProps) => {
   /* ---------- Secondary metadata ---------- */
 
   const metaBits: string[] = [];
-
-  const metaBits: string[] = [];
 if (entry.time_spent_minutes) {
   metaBits.push(`${entry.time_spent_minutes} minutes`);
 }
