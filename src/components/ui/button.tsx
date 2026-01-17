@@ -15,6 +15,7 @@ const buttonVariants = cva(
           "bg-primary text-white shadow-[0_6px_0_#4971e5] active:translate-y-[3px] active:shadow-[0_2px_0_#4971e5]",
         secondary:
           "bg-white border border-input text-black shadow-none",
+          ghost: ""
       },
       size: {
         default: "px-[1.1rem] py-[1.1rem] text-[1.05rem]",

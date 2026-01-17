@@ -30,7 +30,7 @@ interface Book {
 
 interface TimelineEntry {
   id: string;
-  type: "progress" | "note";
+  type: "progress";
   created_at: string;
   pages_read?: number;
   time_spent_minutes?: number;
@@ -42,6 +42,7 @@ interface ProgressEntry {
   pages_read: number;
   time_spent_minutes: number;
   created_at: string;
+  notes?: string;
 }
 
 export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
@@ -102,42 +103,35 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
   };
 
   const fetchTimeline = async () => {
-    const [{ data: progress }, { data: notes }] = await Promise.all([
-      supabase.from("progress_entries").select("*").eq("book_id", bookId),
-      supabase.from("notes").select("*").eq("book_id", bookId),
-    ]);
+  const { data: progress } = await supabase
+    .from("progress_entries")
+    .select("*")
+    .eq("book_id", bookId);
 
-    setProgressEntries(progress ?? []);
+  setProgressEntries(progress ?? []);
 
-    const items: TimelineEntry[] = [];
+  const items: TimelineEntry[] = [];
 
-    progress?.forEach((p) =>
-      items.push({
-        id: p.id,
-        type: "progress",
-        created_at: p.created_at,
-        pages_read: p.pages_read,
-        time_spent_minutes: p.time_spent_minutes,
-      })
-    );
+  progress?.forEach((p) => {
+    items.push({
+      id: p.id,
+      type: "progress",
+      created_at: p.created_at,
+      pages_read: p.pages_read,
+      time_spent_minutes: p.time_spent_minutes,
+      content: p.notes?.trim() || undefined, // attach note inline
+    });
+  });
 
-    notes?.forEach((n) =>
-      items.push({
-        id: n.id,
-        type: "note",
-        created_at: n.created_at,
-        content: n.content,
-      })
-    );
+  items.sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
 
-    items.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() -
-        new Date(a.created_at).getTime()
-    );
+  setTimeline(items);
+};
 
-    setTimeline(items);
-  };
+
 
   if (!book) return null;
 

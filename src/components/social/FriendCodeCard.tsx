@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Copy, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -28,7 +29,7 @@ export const FriendCodeCard = ({ friendCode }: FriendCodeCardProps) => {
   };
 
   return (
-    <div className="mb-6 rounded-[22px] border-2 border-border bg-gradient-to-b from-[#f2f5ff] to-white p-5 shadow-[0_6px_0_theme(colors.border)]">
+    <Card variant="important">
       <div className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
         Your friend code
       </div>
@@ -58,6 +59,6 @@ export const FriendCodeCard = ({ friendCode }: FriendCodeCardProps) => {
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };

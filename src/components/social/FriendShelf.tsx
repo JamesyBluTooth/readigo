@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
 import { Loader2 } from "lucide-react";
 
 interface Friend {
@@ -31,7 +30,6 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get all friendships
       const { data: friendships, error: friendshipsError } = await supabase
         .from("friendships")
         .select("following_id")
@@ -41,12 +39,11 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
 
       if (!friendships || friendships.length === 0) {
         setFriends([]);
-        setLoading(false);
         return;
       }
 
-      // Get profiles for all friends
       const followingIds = friendships.map(f => f.following_id);
+
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("user_id, display_name, avatar_url, friend_code")
@@ -54,7 +51,6 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
 
       if (profilesError) throw profilesError;
 
-      // Get current reading info for each friend
       const friendsWithBooks = await Promise.all(
         (profiles || []).map(async (profile) => {
           const { data: currentBook } = await supabase
@@ -66,7 +62,7 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
             .limit(1)
             .single();
 
-          const progress = currentBook 
+          const progress = currentBook
             ? Math.round((currentBook.current_page / currentBook.total_pages) * 100)
             : 0;
 
@@ -76,7 +72,7 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
             avatar_url: profile.avatar_url,
             friend_code: profile.friend_code,
             current_book_title: currentBook?.title || null,
-            current_book_progress: progress
+            current_book_progress: progress,
           };
         })
       );
@@ -91,83 +87,72 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex justify-center py-10">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
       </div>
     );
   }
 
   if (friends.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">No friends yet. Add some using their friend codes!</p>
-      </div>
+      <Card className="p-6 text-center">
+        <p className="text-sm text-muted-foreground">
+          No friends yet. A little lonely, but easily fixed.
+        </p>
+      </Card>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {friends.map((friend) => (
-        <Card
-          key={friend.user_id}
-          className="p-4 cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-          onClick={() => onFriendClick(friend.user_id)}
-        >
-          <div className="flex flex-col items-center gap-3">
-            <div className="relative">
-              <Avatar className="w-20 h-20">
+    <Card className="p-5">
+      <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-4">
+        Friends
+      </div>
+
+      <div className="flex flex-col">
+        {friends.map((friend) => (
+          <button
+            key={friend.user_id}
+            onClick={() => onFriendClick(friend.user_id)}
+            className="
+              flex items-center justify-between
+              py-2
+              border-b border-border
+              last:border-b-0
+              active:translate-y-[1px]
+              transition-transform
+              text-left
+            "
+          >
+            <div className="flex items-center gap-3">
+              <Avatar className="w-10 h-10">
                 <AvatarImage src={friend.avatar_url || undefined} />
-                <AvatarFallback className="text-lg">
+                <AvatarFallback className="font-bold text-sm text-muted-foreground">
                   {friend.display_name[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {friend.current_book_progress > 0 && (
-                <svg className="absolute inset-0 w-20 h-20 -rotate-90">
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="38"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    className="text-muted"
-                    opacity="0.2"
-                  />
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="38"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    className="text-primary"
-                    strokeDasharray={`${2 * Math.PI * 38}`}
-                    strokeDashoffset={`${2 * Math.PI * 38 * (1 - friend.current_book_progress / 100)}`}
-                    strokeLinecap="round"
-                  />
-                </svg>
-              )}
+
+              <div>
+                <div className="font-semibold text-sm text-foreground">
+                  {friend.display_name}
+                </div>
+
+                {friend.current_book_title && (
+                  <div className="text-xs text-muted-foreground truncate max-w-[180px]">
+                    Reading: {friend.current_book_title}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="text-center w-full">
-              <h3 className="font-semibold text-foreground truncate">
-                {friend.display_name}
-              </h3>
-              <p className="text-xs text-muted-foreground font-mono">
-                {friend.friend_code}
-              </p>
-              {friend.current_book_title ? (
-                <p className="text-xs text-muted-foreground mt-1 truncate">
-                  Reading: {friend.current_book_title}
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground mt-1">
-                  No current book
-                </p>
-              )}
-            </div>
-          </div>
-        </Card>
-      ))}
-    </div>
+
+            {friend.current_book_progress > 0 && (
+              <div className="text-xs font-semibold text-muted-foreground">
+                {friend.current_book_progress}%
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+    </Card>
   );
 };

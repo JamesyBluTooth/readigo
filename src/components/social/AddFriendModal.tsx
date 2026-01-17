@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Copy, Search, Share2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { toast } from "sonner";
-import { FriendCodeCard } from "./FriendCodeCard";
 
 interface AddFriendModalProps {
   open: boolean;
@@ -28,16 +28,21 @@ interface FoundUser {
   friend_code: string;
 }
 
-export const AddFriendModal = ({ 
-  open, 
-  onOpenChange, 
+export const AddFriendModal = ({
+  open,
+  onOpenChange,
   myFriendCode,
-  onFriendAdded 
+  onFriendAdded,
 }: AddFriendModalProps) => {
   const [searchCode, setSearchCode] = useState("");
   const [foundUser, setFoundUser] = useState<FoundUser | null>(null);
   const [searching, setSearching] = useState(false);
   const [adding, setAdding] = useState(false);
+
+  const resetState = () => {
+    setSearchCode("");
+    setFoundUser(null);
+  };
 
   const handleSearch = async () => {
     if (!searchCode || searchCode.length !== 6) {
@@ -61,14 +66,13 @@ export const AddFriendModal = ({
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user && profile.user_id === user.id) {
-        toast.error("You can't add yourself!");
+        toast.error("You can’t add yourself, even conceptually");
         setFoundUser(null);
         return;
       }
 
       setFoundUser(profile);
-    } catch (error) {
-      console.error("Error searching for friend:", error);
+    } catch {
       toast.error("Failed to search for friend");
     } finally {
       setSearching(false);
@@ -83,7 +87,6 @@ export const AddFriendModal = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Check if already following
       const { data: existing } = await supabase
         .from("friendships")
         .select("id")
@@ -92,94 +95,101 @@ export const AddFriendModal = ({
         .single();
 
       if (existing) {
-        toast.info("You're already following this user");
+        toast.info("You’re already following this user");
         return;
       }
 
-      const { error } = await supabase
-        .from("friendships")
-        .insert({
-          follower_id: user.id,
-          following_id: foundUser.user_id
-        });
+      const { error } = await supabase.from("friendships").insert({
+        follower_id: user.id,
+        following_id: foundUser.user_id,
+      });
 
       if (error) throw error;
 
-      toast.success(`Now following ${foundUser.display_name}!`);
-      setFoundUser(null);
-      setSearchCode("");
+      toast.success(`Now following ${foundUser.display_name}`);
+      resetState();
       onFriendAdded();
       onOpenChange(false);
-    } catch (error) {
-      console.error("Error adding friend:", error);
+    } catch {
       toast.error("Failed to add friend");
     } finally {
       setAdding(false);
     }
   };
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(myFriendCode);
-    toast.success("Friend code copied!");
-  };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add Friend</DialogTitle>
-          <DialogDescription>
+    <Drawer
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) resetState();
+        onOpenChange(open);
+      }}
+      shouldScaleBackground={false}
+    >
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Add Friend</DrawerTitle>
+          <DrawerDescription>
             Enter a friend code to find and follow other readers
-          </DialogDescription>
-        </DialogHeader>
+          </DrawerDescription>
+        </DrawerHeader>
 
-        <div className="space-y-6">
-          {/* Search Section */}
-          <div className="space-y-3">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter 6-character code"
-                value={searchCode}
-                onChange={(e) => setSearchCode(e.target.value.toUpperCase())}
-                maxLength={6}
-                className="font-mono uppercase"
-              />
-              <Button onClick={handleSearch} disabled={searching}>
-                <Search className="w-4 h-4" />
-              </Button>
-            </div>
-
-            {/* Found User Card */}
-            {foundUser && (
-              <div className="border rounded-lg p-4 space-y-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src={foundUser.avatar_url || undefined} />
-                    <AvatarFallback>
-                      {foundUser.display_name[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h4 className="font-semibold">{foundUser.display_name}</h4>
-                    <p className="text-sm text-muted-foreground font-mono">
-                      {foundUser.friend_code}
-                    </p>
-                  </div>
-                </div>
-                <Button 
-                  onClick={handleAddFriend} 
-                  disabled={adding}
-                  className="w-full"
-                >
-                  {adding ? "Adding..." : "Follow"}
-                </Button>
-              </div>
-            )}
+        <div className="px-4 space-y-6">
+          {/* Search */}
+          <div className="flex gap-2">
+            <Input
+              placeholder="ABC123"
+              value={searchCode}
+              onChange={(e) => setSearchCode(e.target.value.toUpperCase())}
+              maxLength={6}
+              className="font-mono uppercase"
+            />
+            <Button onClick={handleSearch} disabled={searching}>
+              <Search className="w-4 h-4" />
+            </Button>
           </div>
 
-          <FriendCodeCard friendCode={myFriendCode} />
+          {/* Found User */}
+          {foundUser && (
+            <div className="border rounded-lg p-4 space-y-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src={foundUser.avatar_url || undefined} />
+                  <AvatarFallback>
+                    {foundUser.display_name[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="min-w-0">
+                  <h4 className="font-semibold truncate">
+                    {foundUser.display_name}
+                  </h4>
+                  <p className="text-sm text-muted-foreground font-mono">
+                    {foundUser.friend_code}
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleAddFriend}
+                disabled={adding}
+                className="w-full"
+              >
+                {adding ? "Adding…" : "Follow"}
+              </Button>
+            </div>
+          )}
         </div>
-      </DialogContent>
-    </Dialog>
+
+        <DrawerFooter>
+          <Button
+            variant="secondary"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancel
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 };

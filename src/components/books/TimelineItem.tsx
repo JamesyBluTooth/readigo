@@ -1,4 +1,6 @@
 import { format, isToday, isYesterday } from "date-fns";
+import { useState } from "react";
+import { ViewNoteModal } from "./ViewNoteModal";
 
 interface TimelineEntry {
   id: string;
@@ -14,6 +16,7 @@ interface TimelineItemProps {
 }
 
 export const TimelineItem = ({ entry }: TimelineItemProps) => {
+  const [showNoteModal, setShowNoteModal] = useState(false);
   const date = new Date(entry.created_at);
 
   const dayLabel = isToday(date)
@@ -47,24 +50,36 @@ export const TimelineItem = ({ entry }: TimelineItemProps) => {
 
   const metaBits: string[] = [];
 
-  if (entry.time_spent_minutes) {
-    metaBits.push(`${entry.time_spent_minutes} minutes`);
-  }
+  const metaBits: string[] = [];
+if (entry.time_spent_minutes) {
+  metaBits.push(`${entry.time_spent_minutes} minutes`);
+}
 
-  if (entry.type === "note" || entry.content) {
-    metaBits.push("Note added");
-  }
+// Keep track of note separately
+const hasNote = Boolean(entry.content);
 
-  return (
+return (
+  <>
     <div className="flex justify-between gap-4 pb-3 border-b border-border last:border-b-0">
       <div className="flex-1">
         <strong className="block text-sm text-foreground">
           {primaryText}
         </strong>
 
-        {metaBits.length > 0 && (
+        {(metaBits.length > 0 || hasNote) && (
           <small className="block mt-1 text-xs text-muted-foreground leading-relaxed">
             {metaBits.join(" · ")}
+            {hasNote && (
+              <>
+                {metaBits.length > 0 && " · "}
+                <span
+                  className="cursor-pointer hover:underline text-primary"
+                  onClick={() => setShowNoteModal(true)}
+                >
+                  Note added
+                </span>
+              </>
+            )}
           </small>
         )}
       </div>
@@ -73,5 +88,19 @@ export const TimelineItem = ({ entry }: TimelineItemProps) => {
         {dayLabel} · {timeLabel}
       </div>
     </div>
-  );
+
+    {hasNote && entry.content && (
+      <ViewNoteModal
+        open={showNoteModal}
+        onOpenChange={setShowNoteModal}
+        note={{
+          content: entry.content,
+          duration: entry.time_spent_minutes ? `${entry.time_spent_minutes} minutes` : undefined,
+          date: dayLabel,
+        }}
+      />
+    )}
+  </>
+);
+
 };
