@@ -6,6 +6,8 @@ interface SidebarProps {
   onSignOut: () => void;
 }
 
+const showChallenges = false; // This can be replaced with actual feature flag logic
+
 export const Sidebar = ({ onSignOut }: SidebarProps) => {
   return (
     <aside className="hidden lg:flex flex-col w-[220px] h-screen bg-card border-r border-border p-4 justify-between overflow-hidden">
@@ -35,15 +37,18 @@ export const Sidebar = ({ onSignOut }: SidebarProps) => {
           <span className="font-medium">Books</span>
         </NavLink>
 
-        <NavLink
-          to="/challenge-history"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          activeClassName="bg-muted text-foreground shadow-sm"
-        >
-          <Trophy className="w-5 h-5" />
+
+
+        {showChallenges && (
+          <NavLink
+            to="/"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            activeClassName="bg-muted text-foreground shadow-sm"
+          >
+            <Trophy className="w-5 h-5" />
           <span className="font-medium">Challenges</span>
         </NavLink>
-
+        )}
         <NavLink
           to="/social"
           className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-muted-foreground hover:bg-muted/50 hover:text-foreground"
