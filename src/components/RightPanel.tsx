@@ -1,5 +1,5 @@
 import { DailyChallenge } from "./dashboard/DailyChallenge";
-import { FriendFeed } from "./dashboard/FriendFeed";
+import { FriendFeed } from "./social/FriendFeed";
 
 export const RightPanel = () => {
   return (

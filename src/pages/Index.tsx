@@ -11,7 +11,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { RightPanel } from "@/components/RightPanel";
 import { MobileNav } from "@/components/MobileNav";
 import { DailyChallenge } from "@/components/dashboard/DailyChallenge";
-import { FriendFeed } from "@/components/dashboard/FriendFeed";
+import { FriendFeed } from "@/components/social/FriendFeed";
 import { Outlet, useLocation } from "react-router-dom";
 import { HomePage } from "@/pages/Home";
 
