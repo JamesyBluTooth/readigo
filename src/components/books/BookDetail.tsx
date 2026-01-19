@@ -8,7 +8,6 @@ import { LogReadingModal } from "./LogReadingModal";
 import { CompleteBookModal } from "./CompleteBookModal";
 import { EditBookModal } from "./EditBookModal";
 import { TimelineItem } from "./TimelineItem";
-import { getUserEdit, applyUserEdits } from "@/lib/bookUserEdits";
 
 interface BookDetailProps {
   bookId: string;
@@ -86,17 +85,6 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
       .single();
 
     if (error || !data) return;
-
-    if (data.isbn) {
-      const { data: auth } = await supabase.auth.getUser();
-      if (auth.user) {
-        const edit = await getUserEdit(data.isbn, auth.user.id);
-        if (edit) {
-          setBook(applyUserEdits(data, edit));
-          return;
-        }
-      }
-    }
 
     setBook(data);
   };

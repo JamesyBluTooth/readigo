@@ -13,8 +13,50 @@ export interface BookUserEdit {
   updated_at?: string;
 }
 
+export interface BookEdit {
+  title?: string;
+  author?: string;
+  total_pages?: number;
+  genres?: string[];
+  cover_url?: string;
+}
+
+/**
+ * Save or update a book's details directly in the books table
+ * This overwrites the book record with the provided fields
+ */
+export async function saveBookEdit(bookId: string, edit: BookEdit): Promise<boolean> {
+  try {
+    const updateData: Record<string, any> = {};
+    
+    if (edit.title !== undefined) updateData.title = edit.title;
+    if (edit.author !== undefined) updateData.author = edit.author;
+    if (edit.total_pages !== undefined) updateData.total_pages = edit.total_pages;
+    if (edit.genres !== undefined) updateData.genres = edit.genres;
+    if (edit.cover_url !== undefined) updateData.cover_url = edit.cover_url;
+
+    // Always update the updated_at timestamp
+    updateData.updated_at = new Date().toISOString();
+
+    const { error } = await supabase
+      .from('books')
+      .update(updateData)
+      .eq('id', bookId);
+
+    if (error) {
+      console.error('Failed to save book edit:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Failed to save book edit:', error);
+    return false;
+  }
+}
+
 /**
  * Get community edits for a book by ISBN (edits from other users)
+ * @deprecated This function is kept for backwards compatibility but may be removed in future versions
  */
 export async function getCommunityEdit(isbn: string, currentUserId: string): Promise<BookUserEdit | null> {
   try {
@@ -36,6 +78,7 @@ export async function getCommunityEdit(isbn: string, currentUserId: string): Pro
 
 /**
  * Get the current user's edit for a book by ISBN
+ * @deprecated This function is kept for backwards compatibility but may be removed in future versions
  */
 export async function getUserEdit(isbn: string, userId: string): Promise<BookUserEdit | null> {
   try {
@@ -54,7 +97,8 @@ export async function getUserEdit(isbn: string, userId: string): Promise<BookUse
 }
 
 /**
- * Save or update a user's book edit
+ * Save or update a user's book edit to the book_user_edits table
+ * @deprecated Use saveBookEdit instead to save directly to the books table
  */
 export async function saveUserEdit(edit: Omit<BookUserEdit, 'id' | 'created_at' | 'updated_at'>): Promise<BookUserEdit | null> {
   try {
@@ -97,6 +141,7 @@ export async function saveUserEdit(edit: Omit<BookUserEdit, 'id' | 'created_at' 
 
 /**
  * Accept a community edit - creates a copy under the current user's ID
+ * @deprecated This function is kept for backwards compatibility
  */
 export async function acceptCommunityEdit(communityEdit: BookUserEdit, currentUserId: string): Promise<BookUserEdit | null> {
   return saveUserEdit({
@@ -112,6 +157,7 @@ export async function acceptCommunityEdit(communityEdit: BookUserEdit, currentUs
 
 /**
  * Apply user edits to book data
+ * @deprecated Edits are now applied directly to the books table, this is kept for backwards compatibility
  */
 export function applyUserEdits<T extends { isbn?: string | null }>(
   book: T, 
