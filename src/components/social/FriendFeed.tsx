@@ -76,7 +76,7 @@ export const FriendFeed = () => {
         .from('daily_challenges')
         .select('user_id, completed_at: updated_at')
         .in('user_id', friendIds)
-        .eq('completed', true)
+        .eq('is_completed', true)
         .order('updated_at', { ascending: false })
         .limit(10);
 
