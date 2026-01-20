@@ -119,7 +119,7 @@ const Index = () => {
     <div className="flex h-screen w-full bg-background overflow-hidden">
       <Sidebar onSignOut={handleSignOut} />
 
-      <main className="flex-1 overflow-y-auto h-screen pb-20 lg:pb-0">
+      <main className="flex-1 overflow-y-auto h-screen pb-20 lg:pb-0 relative" id="drawer-boundary">
         <div className="container mx-auto px-4 py-6 lg:py-8 max-w-6xl">
           <Outlet />
         </div>

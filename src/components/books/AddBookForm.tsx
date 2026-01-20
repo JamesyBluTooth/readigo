@@ -2,11 +2,18 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { Search, AlertTriangle } from "lucide-react";
 import { lookupBookByISBN, CanonicalBook } from "@/lib/hybridBookLookup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { getCommunityEdit, acceptCommunityEdit, BookUserEdit } from "@/lib/bookUserEdits";
+import { BookUserEdit } from "@/lib/bookUserEdits";
 
 interface AddBookFormProps {
   onBookAdded: () => void;
@@ -51,14 +58,6 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
       }
 
       setPreviewBook(bookData);
-
-      // Check for community edits
-      if (currentUserId) {
-        const edit = await getCommunityEdit(isbn.replace(/[^0-9X]/gi, ''), currentUserId);
-        if (edit) {
-          setCommunityEdit(edit);
-        }
-      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -215,96 +214,74 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
     </small>
   </div>
 
-  {previewBook && (
-    <div className="flex gap-2">
-    </div>
-  )}
 </form>
 
+    <Drawer open={isSheetOpen} onOpenChange={(open) => !open && handleReset()}>
+      <DrawerContent>
+        <DrawerHeader>
+          {/* Book preview header */}
+          <div className="flex gap-4">
+            {previewBook?.cover_url ? (
+              <img
+                src={previewBook.cover_url}
+                alt={previewBook.title}
+                className="w-[72px] h-[108px] object-cover rounded-sm bg-muted"
+              />
+            ) : (
+              <div className="w-[72px] h-[108px] rounded-sm bg-muted grid place-items-center text-muted-foreground font-bold">
+                ?
+              </div>
+            )}
 
-      {/* BACKDROP */}
-<div
-  className={`fixed inset-0 bg-black/35 z-50 transition-opacity duration-200
-    ${isSheetOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
-  `}
-  onClick={handleReset}
-/>
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold truncate">
+                {previewBook?.title || "Unknown title"}
+              </h2>
+              <p className="text-sm text-muted-foreground truncate">
+                {previewBook?.authors || "Unknown author"}
+              </p>
+              {previewBook?.page_count && (
+                <small className="text-xs text-muted-foreground">
+                  {previewBook.page_count} pages
+                </small>
+              )}
+            </div>
+          </div>
+        </DrawerHeader>
 
-{/* BOTTOM SHEET */}
-<div
-  className={`fixed left-0 right-0 bottom-0 z-[51] bg-card rounded-t-lg
-    transform transition-transform duration-300
-    ${isSheetOpen ? "translate-y-0" : "translate-y-full"}
-  `}
->
-  {/* Handle */}
-  <div className="w-11 h-1.5 bg-gray-300 rounded-full mx-auto my-2.5" />
+        <div className="px-4 space-y-4">
+          {/* Description */}
+          {previewBook?.description && (
+            <p className="text-sm leading-relaxed text-foreground/80">
+              {previewBook.description}
+            </p>
+          )}
 
-  <div className="p-6 space-y-4">
-    {/* Header */}
-    <div className="flex gap-4">
-      {previewBook?.cover_url ? (
-        <img
-          src={previewBook.cover_url}
-          alt={previewBook.title}
-          className="w-[72px] h-[108px] object-cover rounded-sm bg-muted"
-        />
-      ) : (
-        <div className="w-[72px] h-[108px] rounded-sm bg-muted grid place-items-center text-muted-foreground font-bold">
-          ?
+          {/* Warnings / completeness */}
+          {!useCommunityEdit && previewBook?.missing_fields.length > 0 && (
+            <div className="flex items-start gap-2 text-xs text-amber-600">
+              <AlertTriangle className="w-4 h-4 mt-0.5" />
+              <span>
+                Some details are missing. You can edit them later to improve data quality.
+              </span>
+            </div>
+          )}
         </div>
-      )}
 
-      <div className="min-w-0">
-        <h2 className="text-lg font-semibold truncate">
-          {previewBook?.title || "Unknown title"}
-        </h2>
-        <p className="text-sm text-muted-foreground truncate">
-          {previewBook?.authors || "Unknown author"}
-        </p>
-        {previewBook?.page_count && (
-          <small className="text-xs text-muted-foreground">
-            {previewBook.page_count} pages
-          </small>
-        )}
-      </div>
-    </div>
+        <DrawerFooter>
+          <Button
+            onClick={handleAddBook}
+            disabled={loading || needsCommunityEditChoice}
+          >
+            Add to Library
+          </Button>
 
-    {/* Description */}
-    {previewBook?.description && (
-      <p className="text-sm leading-relaxed text-foreground/80">
-        {previewBook.description}
-      </p>
-    )}
-
-    {/* Warnings / completeness */}
-    {!useCommunityEdit && previewBook?.missing_fields.length > 0 && (
-      <div className="flex items-start gap-2 text-xs text-amber-600">
-        <AlertTriangle className="w-4 h-4 mt-0.5" />
-        <span>
-          Some details are missing. You can edit them later to improve data quality.
-        </span>
-      </div>
-    )}
-
-    {/* Actions */}
-    <div className="flex flex-col gap-2 pt-2">
-      <Button
-        onClick={handleAddBook}
-        disabled={loading || needsCommunityEditChoice}
-      >
-        Add to Library
-      </Button>
-
-      <Button
-        variant="secondary"
-        onClick={handleReset}
-      >
-        Cancel
-      </Button>
-    </div>
-  </div>
-</div>
+          <DrawerClose asChild>
+            <Button variant="secondary">Cancel</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
 
     </div>
   );

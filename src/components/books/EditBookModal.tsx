@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { saveBookEdit, BookEdit } from "@/lib/bookUserEdits";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -25,7 +31,6 @@ interface EditBookModalProps {
 
 export const EditBookModal = ({
   bookId,
-  isbn,
   currentData,
   open,
   onOpenChange,
@@ -43,50 +48,47 @@ export const EditBookModal = ({
 
   useEffect(() => {
     if (open) {
-      resetForm();
+      setFormData({
+        title: currentData.title,
+        author: currentData.author || "",
+        total_pages: currentData.total_pages?.toString() || "",
+        genres: currentData.genres?.join(", ") || "",
+      });
     }
   }, [open, currentData]);
-
-  const resetForm = () => {
-    setFormData({
-      title: currentData.title,
-      author: currentData.author || "",
-      total_pages: currentData.total_pages?.toString() || "",
-      genres: currentData.genres?.join(", ") || "",
-    });
-  };
 
   const handleSave = async () => {
     setLoading(true);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
+      if (!user) throw new Error("User not authenticated");
 
-      const genresArray = formData.genres.split(",").map(g => g.trim()).filter(g => g);
+      const genresArray = formData.genres
+        .split(",")
+        .map(g => g.trim())
+        .filter(Boolean);
 
       const edit: BookEdit = {
         title: formData.title !== currentData.title ? formData.title : undefined,
         author: formData.author !== (currentData.author || "") ? formData.author : undefined,
-        total_pages: formData.total_pages && parseInt(formData.total_pages) !== (currentData.total_pages || 0) 
-          ? parseInt(formData.total_pages) 
-          : undefined,
-        genres: JSON.stringify(genresArray) !== JSON.stringify(currentData.genres || []) 
-          ? genresArray 
-          : undefined,
+        total_pages:
+          formData.total_pages &&
+          parseInt(formData.total_pages) !== (currentData.total_pages || 0)
+            ? parseInt(formData.total_pages)
+            : undefined,
+        genres:
+          JSON.stringify(genresArray) !== JSON.stringify(currentData.genres || [])
+            ? genresArray
+            : undefined,
       };
 
-      // Only save if there are actual changes
-      const hasChanges = edit.title !== undefined || edit.author !== undefined || edit.total_pages !== undefined || edit.genres !== undefined;
-      
+      const hasChanges = Object.values(edit).some(v => v !== undefined);
+
       if (hasChanges) {
         const result = await saveBookEdit(bookId, edit);
-        if (!result) {
-          throw new Error("Failed to save edit");
-        }
-        
+        if (!result) throw new Error("Failed to save edit");
+
         toast({
           title: "Changes saved",
           description: "Your book details have been updated.",
@@ -107,74 +109,107 @@ export const EditBookModal = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit Book Details</DialogTitle>
-          <DialogDescription>
-            Update your book's information
-          </DialogDescription>
-        </DialogHeader>
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="rounded-t-[22px] border-2 border-border border-b-0">
 
-        <Alert className="border-primary/30 bg-primary/5">
-          <Users className="h-4 w-4 text-primary" />
-          <AlertDescription className="text-xs">
-            Your changes will be saved directly to your book record and will be reflected immediately in your library.
-          </AlertDescription>
-        </Alert>
+        {/* HEADER */}
+        <DrawerHeader className="text-left px-6 pt-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <DrawerTitle>Edit book details</DrawerTitle>
+              <DrawerDescription>
+                These changes apply only to your library.
+              </DrawerDescription>
+            </div>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <DrawerClose asChild>
+              <button
+                aria-label="Close"
+                className="text-xl text-muted-foreground hover:text-foreground"
+              >
+                &times;
+              </button>
+            </DrawerClose>
+          </div>
+        </DrawerHeader>
+
+        {/* FORM */}
+        <div className="space-y-4 px-6 py-4">
+          <div className="flex flex-col gap-1">
+            <Label>Title</Label>
             <Input
-              id="title"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Book title"
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="author">Author</Label>
+          <div className="flex flex-col gap-1">
+            <Label>Author</Label>
             <Input
-              id="author"
               value={formData.author}
-              onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-              placeholder="Author name"
+              onChange={(e) =>
+                setFormData({ ...formData, author: e.target.value })
+              }
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="pages">Total Pages</Label>
-            <Input
-              id="pages"
-              type="number"
-              value={formData.total_pages}
-              onChange={(e) => setFormData({ ...formData, total_pages: e.target.value })}
-              placeholder="Number of pages"
+          {/* Hardcoded fields from HTML */}
+          <div className="flex flex-col gap-1">
+            <Label>Description</Label>
+            <textarea
+              className="min-h-[90px] rounded-[14px] border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              defaultValue="A bleak and unsettling vision of a totalitarian future…"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="genres">Genres (comma-separated)</Label>
-            <Input
-              id="genres"
-              value={formData.genres}
-              onChange={(e) => setFormData({ ...formData, genres: e.target.value })}
-              placeholder="Fiction, Mystery, Thriller"
-            />
+          <div className="flex gap-4 items-center">
+            <div className="h-[120px] w-[80px] rounded-[14px] bg-muted flex items-center justify-center font-bold text-muted-foreground">
+              {formData.title.slice(0, 4)}
+            </div>
+
+            <div className="flex flex-col gap-1 flex-1">
+              <Label>Cover image URL</Label>
+              <Input placeholder="https://…" />
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-end gap-2">
-          <Button onClick={() => onOpenChange(false)} disabled={loading}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={loading}>
-            {loading ? "Saving..." : "Save Changes"}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        <hr className="mx-6 border-border" />
+
+        {/* ACTIONS */}
+        <DrawerFooter className="px-6">
+          <div className="flex gap-3">
+            <DrawerClose asChild>
+              <Button variant="secondary" className="flex-1" disabled={loading}>
+                Discard
+              </Button>
+            </DrawerClose>
+
+            <Button
+              className="flex-1"
+              onClick={handleSave}
+              disabled={loading}
+            >
+              {loading ? "Saving…" : "Save changes"}
+            </Button>
+          </div>
+
+          {/* DANGER ZONE — hardcoded */}
+          <div className="mt-4 rounded-[16px] border border-red-200 bg-red-50 p-4">
+            <h3 className="text-sm font-semibold text-red-600">
+              Remove book
+            </h3>
+            <p className="text-xs text-red-700 mt-1">
+              This also removes its progress and notes. No going back.
+            </p>
+            <button className="mt-3 rounded-[14px] bg-red-500 px-4 py-2 text-sm font-semibold text-white active:translate-y-[1px]">
+              Remove from library
+            </button>
+          </div>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 };

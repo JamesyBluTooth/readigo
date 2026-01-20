@@ -26,19 +26,20 @@ const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
+  <>
+    <DrawerOverlay className="absolute inset-0" />
     <DrawerPrimitive.Content
       ref={ref}
       {...props}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 flex w-full flex-col rounded-t-[10px] border bg-background overflow-hidden",
-        className
-      )}
+  "absolute inset-x-0 bottom-0 z-50 flex w-full flex-col rounded-t-[10px] border bg-background overflow-hidden will-change: transform",
+  className
+)}
+
       style={{
         maxHeight: "90vh",
-        minHeight: "20vh",
-      }}
+        minHeight: "20vh",        willChange: "transform",
+        backfaceVisibility: "hidden",      }}
       drag="y"
       dragConstraints={{ top: 0, bottom: 0 }}
       dragElastic={0.3} // smooth pull feel
@@ -47,9 +48,11 @@ const DrawerContent = React.forwardRef<
       <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted cursor-grab" />
 
       {/* Scrollable content */}
-      <div className="overflow-y-auto flex-1">{children}</div>
+      <div className="overflow-y-auto flex-1" style={{ WebkitFontSmoothing: "antialiased" }}>
+        {children}
+      </div>
     </DrawerPrimitive.Content>
-  </DrawerPortal>
+  </>
 ));
 
 
