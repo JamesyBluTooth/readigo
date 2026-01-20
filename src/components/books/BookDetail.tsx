@@ -24,6 +24,7 @@ interface Book {
   total_pages: number;
   current_page: number;
   is_completed: boolean;
+  description?: string;
 }
 
 interface TimelineEntry {
@@ -265,6 +266,12 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
         >
           Log Reading
         </Button>
+
+        <hr />
+
+        <div className="flex flex-col gap-6">
+          {book.description}
+        </div>
 
         <hr />
 
