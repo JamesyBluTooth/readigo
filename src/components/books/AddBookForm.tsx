@@ -113,6 +113,7 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
         genres: useEdit && communityEdit.genres ? communityEdit.genres : (previewBook.categories || []),
         cover_url: useEdit && communityEdit.cover_url ? communityEdit.cover_url : previewBook.cover_url,
         total_pages: useEdit && communityEdit.total_pages ? communityEdit.total_pages : previewBook.page_count,
+        description: previewBook.description,
       };
 
       const { error } = await supabase.from("books").insert(bookData);

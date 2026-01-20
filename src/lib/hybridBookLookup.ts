@@ -152,10 +152,20 @@ function mergeBookData(
   google: GoogleBook | null,
   openLib: OpenLibraryBook | null
 ): CanonicalBook {
-  const getDescription = (ol: OpenLibraryBook | null): string | null => {
-    if (!ol?.description) return null;
-    if (typeof ol.description === 'string') return ol.description;
-    return ol.description.value || null;
+  const getDescription = (): string | null => {
+    // Prefer Google Books description as it's usually more concise and polished
+    if (google?.description) {
+      // Clean up Google description - remove HTML tags if present
+      return google.description.replace(/<[^>]*>/g, '').trim() || null;
+    }
+    // Fallback to Open Library description
+    if (openLib?.description) {
+      if (typeof openLib.description === 'string') {
+        return openLib.description.trim() || null;
+      }
+      return openLib.description.value?.trim() || null;
+    }
+    return null;
   };
 
   const getCoverUrl = (): string | null => {
@@ -170,14 +180,22 @@ function mergeBookData(
     return null;
   };
 
+  const getPublishedDate = (): string | null => {
+    // Prefer Google Books published date as it's often more complete
+    if (google?.publishedDate) {
+      return google.publishedDate;
+    }
+    return openLib?.publish_date || null;
+  };
+
   const merged: CanonicalBook = {
     isbn,
     title: google?.title || openLib?.title || 'Unknown Title',
     authors: google?.authors?.join(', ') || openLib?.authors?.join(', ') || null,
     cover_url: getCoverUrl(),
-    description: getDescription(openLib) || null,
+    description: getDescription(),
     page_count: (google?.pageCount && google.pageCount > 0) ? google.pageCount : (openLib?.number_of_pages || null),
-    published_date: openLib?.publish_date || null,
+    published_date: getPublishedDate(),
     categories: google?.categories || openLib?.subjects || [],
     google_books_id: null, // Would need to extract from Google response
     open_library_key: openLib?.key || null,
@@ -219,10 +237,12 @@ export async function lookupBookByISBN(isbn: string): Promise<CanonicalBook | nu
   }
 
   // Step 3: Determine if we need secondary lookup
+  // We perform secondary lookup if primary source is missing key data including description
   const needsSecondary = !googleData || 
     !googleData.pageCount || 
     !googleData.authors?.length ||
-    !googleData.imageLinks?.thumbnail;
+    !googleData.imageLinks?.thumbnail ||
+    !googleData.description;
 
   // Step 4: Secondary lookup - Open Library (if needed)
   let openLibData: OpenLibraryBook | null = null;

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Users, CheckCircle2, Trophy, Star, Flame, Loader2 } from "lucide-react";
+import { Users, CheckCircle2, Star, Flame, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface FriendActivity {
   id: string;
   friendName: string;
-  type: 'book_completed' | 'challenge_completed' | 'review_left' | 'streak_milestone';
+  type: 'book_completed' | 'review_left' | 'streak_milestone';
   description: string;
   timestamp: Date;
 }
@@ -24,7 +24,10 @@ export const FriendFeed = () => {
   const loadFriendActivities = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       // Get friends
       const { data: friendships } = await supabase
@@ -52,7 +55,7 @@ export const FriendFeed = () => {
       // Get completed books
       const { data: completedBooks } = await supabase
         .from('books')
-        .select('user_id, title, completed_at, rating')
+        .select('id, user_id, title, completed_at, rating')
         .in('user_id', friendIds)
         .eq('is_completed', true)
         .not('completed_at', 'is', null)
@@ -61,32 +64,13 @@ export const FriendFeed = () => {
 
       completedBooks?.forEach(book => {
         allActivities.push({
-          id: `book-${book.completed_at}`,
+          id: `book-${book.id}`,
           friendName: profileMap.get(book.user_id) || 'Friend',
           type: book.rating ? 'review_left' : 'book_completed',
           description: book.rating 
             ? `rated '${book.title}' ${book.rating} stars`
             : `completed '${book.title}'`,
           timestamp: new Date(book.completed_at!)
-        });
-      });
-
-      // Get completed challenges
-      const { data: completedChallenges } = await supabase
-        .from('daily_challenges')
-        .select('user_id, completed_at: updated_at')
-        .in('user_id', friendIds)
-        .eq('is_completed', true)
-        .order('updated_at', { ascending: false })
-        .limit(10);
-
-      completedChallenges?.forEach(challenge => {
-        allActivities.push({
-          id: `challenge-${challenge.completed_at}`,
-          friendName: profileMap.get(challenge.user_id) || 'Friend',
-          type: 'challenge_completed',
-          description: 'completed a daily challenge',
-          timestamp: new Date(challenge.completed_at)
         });
       });
 
@@ -105,8 +89,6 @@ export const FriendFeed = () => {
     switch (type) {
       case 'book_completed':
         return <CheckCircle2 className="w-4 h-4 text-success" />;
-      case 'challenge_completed':
-        return <Trophy className="w-4 h-4 text-secondary" />;
       case 'review_left':
         return <Star className="w-4 h-4 text-warning" />;
       case 'streak_milestone':

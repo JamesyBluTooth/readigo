@@ -8,6 +8,8 @@ export interface GoogleBook {
     thumbnail?: string;
   };
   pageCount?: number;
+  description?: string;
+  publishedDate?: string;
 }
 
 export interface GoogleBooksResponse {
@@ -37,5 +39,16 @@ export async function fetchBookByISBN(isbn: string): Promise<GoogleBook | null> 
     return null;
   }
 
-  return data.items[0].volumeInfo;
+  const book = data.items[0].volumeInfo;
+  
+  // Ensure we have description and publishedDate in the response
+  return {
+    title: book.title,
+    authors: book.authors,
+    categories: book.categories,
+    imageLinks: book.imageLinks,
+    pageCount: book.pageCount,
+    description: book.description || undefined,
+    publishedDate: book.publishedDate || undefined,
+  };
 }

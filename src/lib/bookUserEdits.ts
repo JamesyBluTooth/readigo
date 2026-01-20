@@ -19,6 +19,7 @@ export interface BookEdit {
   total_pages?: number;
   genres?: string[];
   cover_url?: string;
+  description?: string;
 }
 
 /**
@@ -34,6 +35,7 @@ export async function saveBookEdit(bookId: string, edit: BookEdit): Promise<bool
     if (edit.total_pages !== undefined) updateData.total_pages = edit.total_pages;
     if (edit.genres !== undefined) updateData.genres = edit.genres;
     if (edit.cover_url !== undefined) updateData.cover_url = edit.cover_url;
+    if (edit.description !== undefined) updateData.description = edit.description;
 
     // Always update the updated_at timestamp
     updateData.updated_at = new Date().toISOString();
