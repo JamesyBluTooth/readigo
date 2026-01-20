@@ -112,7 +112,6 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
         genres: useEdit && communityEdit.genres ? communityEdit.genres : (previewBook.categories || []),
         cover_url: useEdit && communityEdit.cover_url ? communityEdit.cover_url : previewBook.cover_url,
         total_pages: useEdit && communityEdit.total_pages ? communityEdit.total_pages : previewBook.page_count,
-        description: previewBook.description,
       };
 
       const { error } = await supabase.from("books").insert(bookData);
@@ -250,12 +249,6 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
         </DrawerHeader>
 
         <div className="px-4 space-y-4">
-          {/* Description */}
-          {previewBook?.description && (
-            <p className="text-sm leading-relaxed text-foreground/80">
-              {previewBook.description}
-            </p>
-          )}
 
           {/* Warnings / completeness */}
           {!useCommunityEdit && previewBook?.missing_fields.length > 0 && (
