@@ -69,25 +69,6 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
     }
     };
 
-  const handleAcceptCommunityEdit = async () => {
-    if (!communityEdit || !currentUserId) return;
-    
-    setLoading(true);
-    try {
-      await acceptCommunityEdit(communityEdit, currentUserId);
-      setUseCommunityEdit(true);
-      toast({
-        title: "Community edit accepted",
-        description: "The book will be added with the community-improved data.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRejectCommunityEdit = () => {
-    setUseCommunityEdit(false);
-  };
 
   const handleAddBook = async () => {
     if (!previewBook) return;
@@ -200,6 +181,7 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
       <Button
         type="submit"
         size="sm"
+        variant="primary"
         disabled={loading || needsCommunityEditChoice}
         className="flex items-center gap-1.5"
       >

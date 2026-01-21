@@ -7,25 +7,29 @@ import { cn } from "@/lib/utils";
 // Button Variants
 // ========================
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center font-bold rounded-md focus:outline-none disabled:pointer-events-none disabled:opacity-50 transition-none", // no easing
+  // Base button — shared behaviour & structure
+  "inline-flex items-center justify-center gap-2 font-semibold rounded-md cursor-pointer select-none whitespace-nowrap disabled:pointer-events-none disabled:opacity-50 transition-[transform,box-shadow] duration-100 ease-out",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-white shadow-[0_6px_0_#4971e5] active:translate-y-[3px] active:shadow-[0_2px_0_#4971e5]",
+        primary:
+          "bg-primary text-white border-2 border-[#4971eb] shadow-[0_4px_0_#4971e5] active:translate-y-[4px] active:shadow-none",
+
         secondary:
-          "bg-white border border-input text-black shadow-none",
-          ghost: ""
+          "bg-white text-text border-2 border-border shadow-none text-[#898b8d]",
+
+        optional:
+          "bg-[var(--bg)] text-text border-2 border-dotted border-border shadow-none",
       },
       size: {
         default: "px-[1.1rem] py-[1.1rem] text-[1.05rem]",
-        sm: "px-[0.7rem] py-[0.7rem] w-1/4 inline-flex gap-2 text-[0.95rem]",
+        sm: "px-[0.7rem] py-[0.7rem] w-1/4 text-[0.95rem]",
         lg: "px-[2rem] py-[1.1rem] text-lg",
-        icon: "h-10 w-10", // icon button
+        icon: "h-10 w-10 p-0",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "primary",
       size: "default",
     },
   }
@@ -49,8 +53,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        className={cn(buttonVariants({ variant, size }), className)}
         {...props}
       >
         {children}

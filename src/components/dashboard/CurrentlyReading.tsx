@@ -50,7 +50,7 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="flex gap-4">
+        {<div className="flex gap-4">
           {book.cover_url && (
             <img
               src={book.cover_url}
@@ -88,7 +88,7 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
               )}
             </div>
           </div>
-        </div>
+        </div>}
 
         <Button onClick={() => onContinue(book.id)} className="w-full">
           Continue Reading
