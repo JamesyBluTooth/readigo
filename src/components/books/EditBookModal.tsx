@@ -116,6 +116,31 @@ export const EditBookModal = ({
     }
   };
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Are you sure you want to delete this book?");
+    if (!confirmed) return;
+
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase
+        .from('books')
+        .delete()
+        .eq('id', bookId);
+
+      if (error) throw error;
+
+      toast({ title: 'Book deleted successfully!', description: 'The book has been removed from your library.' });
+      onOpenChange(false);
+    } catch (error) {
+      toast({ title: 'Error deleting book', description: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="rounded-t-[22px] border-2 border-border border-b-0">
@@ -227,9 +252,13 @@ export const EditBookModal = ({
             <p className="text-xs text-red-700 mt-1">
               This also removes its progress and notes. No going back.
             </p>
-            <button className="mt-3 rounded-[14px] bg-red-500 px-4 py-2 text-sm font-semibold text-white active:translate-y-[1px]">
+            <Button
+              className="mt-3 w-full"
+              variant="destructive"
+              onClick={handleDelete}
+            >
               Remove from library
-            </button>
+            </Button>
           </div>
         </DrawerFooter>
       </DrawerContent>
