@@ -23,6 +23,7 @@ interface EditBookModalProps {
     author?: string;
     total_pages?: number;
     genres?: string[];
+    description?: string;
   };
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -41,6 +42,7 @@ export const EditBookModal = ({
     author: currentData.author || "",
     total_pages: currentData.total_pages?.toString() || "",
     genres: currentData.genres?.join(", ") || "",
+    description: currentData.description || "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,7 @@ export const EditBookModal = ({
         author: currentData.author || "",
         total_pages: currentData.total_pages?.toString() || "",
         genres: currentData.genres?.join(", ") || "",
+        description: currentData.description || "",
       });
     }
   }, [open, currentData]);
@@ -80,6 +83,11 @@ export const EditBookModal = ({
         genres:
           JSON.stringify(genresArray) !== JSON.stringify(currentData.genres || [])
             ? genresArray
+            : undefined,
+
+        description:
+          formData.description !== (currentData.description || "")
+            ? formData.description
             : undefined,
       };
 
@@ -155,12 +163,27 @@ export const EditBookModal = ({
             />
           </div>
 
+          <div className="flex flex-col gap-1">
+            <Label>Total Pages</Label>
+            <Input
+              type="number"
+              value={formData.total_pages}
+              onChange={(e) =>
+                setFormData({ ...formData, total_pages: e.target.value })
+              }
+              min="0"
+            />
+          </div>
+
           {/* Hardcoded fields from HTML */}
           <div className="flex flex-col gap-1">
             <Label>Description</Label>
             <textarea
               className="min-h-[90px] rounded-[14px] border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              defaultValue="A bleak and unsettling vision of a totalitarian future…"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
             />
           </div>
 
