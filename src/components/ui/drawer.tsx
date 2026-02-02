@@ -32,13 +32,14 @@ const DrawerContent = React.forwardRef<
       ref={ref}
       {...props}
       className={cn(
-  "absolute inset-x-0 bottom-0 z-50 flex w-full flex-col rounded-t-[10px] border bg-background overflow-hidden will-change: transform",
+  "absolute inset-x-0 bottom-0 z-50 flex w-full flex-col rounded-t-[10px] border bg-background will-change: transform",
   className
 )}
 
       style={{
-        maxHeight: "90vh",
-        minHeight: "20vh",        willChange: "transform",
+        maxHeight: "calc(100dvh - 64px)",
+        minHeight: "20dvh",
+        willChange: "transform",
         backfaceVisibility: "hidden",      }}
       drag="y"
       dragConstraints={{ top: 0, bottom: 0 }}
@@ -48,7 +49,7 @@ const DrawerContent = React.forwardRef<
       <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted cursor-grab" />
 
       {/* Scrollable content */}
-      <div className="overflow-y-auto flex-1" style={{ WebkitFontSmoothing: "antialiased" }}>
+      <div className="flex-1 min-h-0 overflow-y-auto pb-6" style={{ WebkitFontSmoothing: "antialiased" }}>
         {children}
       </div>
     </DrawerPrimitive.Content>

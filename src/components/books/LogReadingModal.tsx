@@ -252,14 +252,14 @@ export const LogReadingModal = ({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="h-[75vh] px-6 pb-6 overflow-hidden">
-        <button
+        <Button
+          variant="link"
           onClick={() =>
             step > 0 ? setStep((s) => (s - 1) as any) : onOpenChange(false)
           }
-          className="mb-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
         >
           ← Back
-        </button>
+        </Button>
 
         <DrawerHeader className="px-0 pt-0 text-left">
           <DrawerTitle>Log reading</DrawerTitle>
