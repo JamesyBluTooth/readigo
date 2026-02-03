@@ -31,6 +31,7 @@ interface TimelineEntry {
   id: string;
   type: "progress";
   created_at: string;
+  logged_date?: string;
   pages_read?: number;
   time_spent_minutes?: number;
   content?: string;
@@ -105,6 +106,7 @@ export const BookDetail = ({ bookId, onUpdate }: BookDetailProps) => {
       id: p.id,
       type: "progress",
       created_at: p.created_at,
+      logged_date: p.logged_date,
       pages_read: p.pages_read,
       time_spent_minutes: p.time_spent_minutes,
       content: p.notes?.trim() || undefined, // attach note inline

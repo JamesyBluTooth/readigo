@@ -6,6 +6,7 @@ interface TimelineEntry {
   id: string;
   type: "progress" | "note" | "completion" | "incomplete";
   created_at: string;
+  logged_date?: string;
   pages_read?: number;
   time_spent_minutes?: number;
   content?: string;
@@ -17,15 +18,21 @@ interface TimelineItemProps {
 
 export const TimelineItem = ({ entry }: TimelineItemProps) => {
   const [showNoteModal, setShowNoteModal] = useState(false);
-  const date = new Date(entry.created_at);
 
-  const dayLabel = isToday(date)
+  const loggedDay = entry.logged_date
+  ? new Date(`${entry.logged_date}T00:00:00`)
+  : new Date(entry.created_at);
+
+
+  const dayLabel = isToday(loggedDay)
     ? "Today"
-    : isYesterday(date)
+    : isYesterday(loggedDay)
     ? "Yesterday"
-    : format(date, "dd MMM");
+    : format(loggedDay, "dd MMM");
 
-  const timeLabel = format(date, "h:mm a");
+  const timeLabel = format(new Date(entry.created_at), "h:mm a");
+
+  
 
   /* ---------- Primary line ---------- */
 
