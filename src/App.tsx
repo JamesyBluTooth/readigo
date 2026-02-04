@@ -12,7 +12,6 @@ import BookDetailPage from "./pages/BookDetailPage";
 import { Dashboard } from "./pages/Dashboard";
 import { Books } from "./pages/Books";
 import Profile from "./pages/Profile";
-import ChallengeHistory from "./pages/ChallengeHistory";
 import { Social } from "./pages/Social";
 import { Navigate } from "react-router-dom";
 
@@ -29,7 +28,6 @@ const App = () => (
             <Route index element={<Navigate to="/books" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="books" element={<Books />} />
-            <Route path="challenge-history" element={<ChallengeHistory />} />
             <Route path="social" element={<Social />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
