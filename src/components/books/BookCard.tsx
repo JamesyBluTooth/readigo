@@ -71,7 +71,7 @@ export const BookCard = ({
                 </h3>
                 <Button
                   size="sm"
-                  variant="ghost"
+                  variant="link"
                   className="h-8 w-8 p-0 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={handleEditClick}
                 >
@@ -104,7 +104,7 @@ export const BookCard = ({
                   </div>
                   <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500"
+                      className="h-full bg-primary transition-all duration-500"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
