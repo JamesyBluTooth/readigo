@@ -30,8 +30,6 @@ export const TimelineItem = ({ entry }: TimelineItemProps) => {
     ? "Yesterday"
     : format(loggedDay, "dd MMM");
 
-  const timeLabel = format(new Date(entry.created_at), "h:mm a");
-
   
 
   /* ---------- Primary line ---------- */
@@ -90,7 +88,7 @@ return (
       </div>
 
       <div className="text-xs font-semibold text-primary whitespace-nowrap opacity-90">
-        {dayLabel} · {timeLabel}
+        {dayLabel}
       </div>
     </div>
 
