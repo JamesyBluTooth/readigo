@@ -29,15 +29,6 @@ export const MobileNav = ({ onSignOut }: MobileNavProps) => {
         </NavLink>
 
         <NavLink
-          to="/challenge-history"
-          className="flex flex-col items-center gap-1 transition-colors text-muted-foreground"
-          activeClassName="text-primary"
-        >
-          <Trophy className="w-6 h-6" />
-          <span className="text-xs font-medium">Challenges</span>
-        </NavLink>
-
-        <NavLink
           to="/social"
           className="flex flex-col items-center gap-1 transition-colors text-muted-foreground"
           activeClassName="text-primary"
