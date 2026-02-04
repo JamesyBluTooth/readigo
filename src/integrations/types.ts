@@ -250,47 +250,56 @@ export type Database = {
         }
         Relationships: []
       }
-      daily_challenges: {
+      friend_challenges: {
         Row: {
-          challenge_date: string
           challenge_type: string
-          completed_at: string | null
-          created_at: string
-          current_progress: number
-          expires_at: string
+          completed: boolean
           id: string
-          is_completed: boolean
-          target_value: number
-          updated_at: string | null
-          user_id: string
+          progress_value: number
+          target_value: number | null
+          user_a: string
+          user_b: string
+          week_end: string
+          week_start: string
         }
         Insert: {
-          challenge_date?: string
           challenge_type: string
-          completed_at?: string | null
-          created_at?: string
-          current_progress?: number
-          expires_at: string
+          completed?: boolean
           id?: string
-          is_completed?: boolean
-          target_value: number
-          updated_at?: string | null
-          user_id: string
+          progress_value?: number
+          target_value?: number | null
+          user_a: string
+          user_b: string
+          week_end: string
+          week_start: string
         }
         Update: {
-          challenge_date?: string
           challenge_type?: string
-          completed_at?: string | null
-          created_at?: string
-          current_progress?: number
-          expires_at?: string
+          completed?: boolean
           id?: string
-          is_completed?: boolean
-          target_value?: number
-          updated_at?: string | null
-          user_id?: string
+          progress_value?: number
+          target_value?: number | null
+          user_a?: string
+          user_b?: string
+          week_end?: string
+          week_start?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "friend_challenges_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "friend_challenges_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       friendships: {
         Row: {
