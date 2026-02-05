@@ -24,6 +24,7 @@ interface EditBookModalProps {
     total_pages?: number;
     genres?: string[];
     description?: string;
+    cover_url?: string;
   };
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -43,6 +44,7 @@ export const EditBookModal = ({
     total_pages: currentData.total_pages?.toString() || "",
     genres: currentData.genres?.join(", ") || "",
     description: currentData.description || "",
+    cover_url: currentData.cover_url || "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -56,9 +58,43 @@ export const EditBookModal = ({
         total_pages: currentData.total_pages?.toString() || "",
         genres: currentData.genres?.join(", ") || "",
         description: currentData.description || "",
+        cover_url: currentData.cover_url || "",
       });
     }
   }, [open, currentData]);
+
+  const handleDelete = async () => {
+  setLoading(true);
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
+    const { error } = await supabase
+      .from("books")
+      .delete()
+      .eq("id", bookId);
+
+    if (error) throw error;
+
+    toast({
+      title: "Book removed",
+      description: "The book has been removed from your library.",
+    });
+
+    onSave(); // refresh parent list
+    onOpenChange(false);
+  } catch (error: any) {
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleSave = async () => {
     setLoading(true);
@@ -88,6 +124,11 @@ export const EditBookModal = ({
         description:
           formData.description !== (currentData.description || "")
             ? formData.description
+            : undefined,
+
+        cover_url:
+          formData.cover_url !== (currentData.cover_url || "")
+            ? formData.cover_url
             : undefined,
       };
 
@@ -175,7 +216,6 @@ export const EditBookModal = ({
             />
           </div>
 
-          {/* Hardcoded fields from HTML */}
           <div className="flex flex-col gap-1">
             <Label>Description</Label>
             <textarea
@@ -189,12 +229,26 @@ export const EditBookModal = ({
 
           <div className="flex gap-4 items-center">
             <div className="h-[120px] w-[80px] rounded-[14px] bg-muted flex items-center justify-center font-bold text-muted-foreground">
-              {formData.title.slice(0, 4)}
+              {formData.cover_url ? (
+                <img
+                  src={formData.cover_url}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                "No cover"
+              )}
             </div>
 
             <div className="flex flex-col gap-1 flex-1">
               <Label>Cover image URL</Label>
-              <Input placeholder="https://…" />
+              <Input
+                placeholder="https://…"
+                value={formData.cover_url}
+                onChange={(e) =>
+                  setFormData({ ...formData, cover_url: e.target.value })
+                }
+              />
             </div>
           </div>
         </div>
@@ -219,7 +273,7 @@ export const EditBookModal = ({
             </Button>
           </div>
 
-          {/* DANGER ZONE — hardcoded */}
+          {/* DANGER ZONE */}
           <div className="mt-4 rounded-[16px] border border-red-200 bg-red-50 p-4">
             <h3 className="text-sm font-semibold text-red-600">
               Remove book
@@ -227,9 +281,14 @@ export const EditBookModal = ({
             <p className="text-xs text-red-700 mt-1">
               This also removes its progress and notes. No going back.
             </p>
-            <button className="mt-3 rounded-[14px] bg-red-500 px-4 py-2 text-sm font-semibold text-white active:translate-y-[1px]">
-              Remove from library
-            </button>
+            <Button
+              variant="destructive"
+              className="mt-3 w-full"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              {loading ? "Removing…" : "Remove from library"}
+            </Button>
           </div>
         </DrawerFooter>
       </DrawerContent>
