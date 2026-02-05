@@ -4,13 +4,11 @@ import { AuthPage } from "@/components/auth/AuthPage";
 import { Dashboard } from "./Dashboard";
 import { Books } from "./Books";
 import Profile from "./Profile";
-import ChallengeHistory from "./ChallengeHistory";
 import { Social } from "./Social";
 import Settings from "./Settings";
 import { Sidebar } from "@/components/Sidebar";
 import { RightPanel } from "@/components/RightPanel";
 import { MobileNav } from "@/components/MobileNav";
-import { DailyChallenge } from "@/components/dashboard/DailyChallenge";
 import { FriendFeed } from "@/components/social/FriendFeed";
 import { Outlet, useLocation } from "react-router-dom";
 import { HomePage } from "@/pages/Home";
@@ -126,7 +124,6 @@ const Index = () => {
 
         {/* Mobile: Show right panel content below main content */}
         <div className="lg:hidden container mx-auto px-4 pb-6 space-y-4">
-          <DailyChallenge />
           <FriendFeed />
         </div>
       </main>
