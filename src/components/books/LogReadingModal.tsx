@@ -32,6 +32,14 @@ interface LogReadingModalProps {
 
 const formatISO = (d: Date) => d.toISOString().split("T")[0];
 
+const today = () => new Date();
+
+const yesterday = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d;
+};
+
 /* ======================
    Component
 ====================== */
@@ -57,11 +65,10 @@ export const LogReadingModal = ({
   const [loading, setLoading] = useState(false);
 
   /* ----- date picker ----- */
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [displayMonth, setDisplayMonth] = useState(
-    new Date(logDate.getFullYear(), logDate.getMonth(), 1)
-  );
-  const pickerRef = useRef<HTMLDivElement>(null);
+  type DatePreset = "today" | "yesterday" | "custom";
+
+const [datePreset, setDatePreset] = useState<DatePreset>("today");
+
 
   /* ----- swipe ----- */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -73,23 +80,11 @@ export const LogReadingModal = ({
      Effects
   ====================== */
 
-  useEffect(() => {
-    if (!open) {
-      setStep(0);
-      setPickerOpen(false);
-    }
-  }, [open]);
+useEffect(() => {
+  if (datePreset === "today") setLogDate(today());
+  if (datePreset === "yesterday") setLogDate(yesterday());
+}, [datePreset]);
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!pickerRef.current?.contains(e.target as Node)) {
-        setPickerOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   /* ======================
      Swipe handlers
@@ -200,43 +195,6 @@ export const LogReadingModal = ({
   };
 
   /* ======================
-     Calendar
-  ====================== */
-
-  const renderDays = () => {
-    const y = displayMonth.getFullYear();
-    const m = displayMonth.getMonth();
-    const firstDay = new Date(y, m, 1).getDay();
-    const lastDate = new Date(y, m + 1, 0).getDate();
-
-    return (
-      <>
-        {Array.from({ length: firstDay }).map((_, i) => (
-          <div key={`empty-${i}`} />
-        ))}
-
-        {Array.from({ length: lastDate }).map((_, i) => {
-          const d = new Date(y, m, i + 1);
-
-          return (
-            <button
-              key={i}
-              type="button"
-              onClick={() => {
-                setLogDate(d);
-                setPickerOpen(false);
-              }}
-              className="rounded-md p-1 text-sm hover:bg-primary hover:text-white"
-            >
-              {i + 1}
-            </button>
-          );
-        })}
-      </>
-    );
-  };
-
-  /* ======================
      JSX
   ====================== */
 
@@ -283,85 +241,40 @@ export const LogReadingModal = ({
           >
             {/* STEP 1 */}
             <div className="w-full flex-shrink-0 pr-2 overflow-y-auto">
-              <div ref={pickerRef} className="mb-5">
-                <Label>Date</Label>
+              <div className="mb-5">
+  <Label>Date</Label>
 
-                <div
-                  onClick={() => setPickerOpen((o) => !o)}
-                  className="mt-1 flex cursor-pointer justify-between rounded-lg border-2 px-3 py-2"
-                >
-                  <span>{formatISO(logDate)}</span>
-                  <span>▾</span>
-                </div>
+  <div className="mt-1 flex gap-2">
+    {(["today", "yesterday", "custom"] as const).map((preset) => (
+      <Button
+        key={preset}
+        type="button"
+        variant="secondary"
+        className={cn(
+          "flex-1",
+          datePreset === preset && "border-primary"
+        )}
+        onClick={() => setDatePreset(preset)}
+      >
+        {preset === "today"
+          ? "Today"
+          : preset === "yesterday"
+          ? "Yesterday"
+          : "Pick date"}
+      </Button>
+    ))}
+  </div>
 
-                {pickerOpen && (
-                  <div className="mt-2 rounded-lg border-2 bg-white p-2 shadow">
-                    <div className="mb-2 flex justify-between">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setDisplayMonth(
-                            new Date(
-                              displayMonth.getFullYear(),
-                              displayMonth.getMonth() - 1,
-                              1
-                            )
-                          )
-                        }
-                      >
-                        ‹
-                      </button>
+  {datePreset === "custom" && (
+    <Input
+      type="date"
+      className="mt-2"
+      value={formatISO(logDate)}
+      onChange={(e) => setLogDate(new Date(e.target.value))}
+    />
+  )}
+</div>
 
-                      <span className="font-semibold">
-                        {displayMonth.toLocaleString("default", {
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setDisplayMonth(
-                            new Date(
-                              displayMonth.getFullYear(),
-                              displayMonth.getMonth() + 1,
-                              1
-                            )
-                          )
-                        }
-                      >
-                        ›
-                      </button>
-                    </div>
-
-                    <div className="mb-2 text-right">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const today = new Date();
-                          setLogDate(today);
-                          setDisplayMonth(
-                            new Date(
-                              today.getFullYear(),
-                              today.getMonth(),
-                              1
-                            )
-                          );
-                          setPickerOpen(false);
-                        }}
-                        className="text-sm font-semibold text-primary"
-                      >
-                        Set to Today
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-7 gap-1">
-                      {renderDays()}
-                    </div>
-                  </div>
-                )}
-              </div>
 
               <Label>Current page</Label>
               <Input
