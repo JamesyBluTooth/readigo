@@ -14,11 +14,11 @@ const DrawerPortal = DrawerPrimitive.Portal;
 
 const DrawerClose = DrawerPrimitive.Close;
 
-const DrawerOverlay = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Overlay ref={ref} className={cn("fixed inset-0 z-50 bg-black/80", className)} {...props} />
+const DrawerOverlay = React.forwardRef((props, ref) => (
+  <DrawerPrimitive.Overlay ref={ref} 
+  className="fixed inset-0 z-50 bg-black/80" 
+  {...props} 
+  />
 ));
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
@@ -26,24 +26,20 @@ const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
-  <>
+  <DrawerPortal>
     <DrawerOverlay className="absolute inset-0" />
     <DrawerPrimitive.Content
       ref={ref}
       {...props}
       className={cn(
-  "absolute inset-x-0 bottom-0 z-50 flex w-full flex-col rounded-t-[10px] border bg-background will-change: transform",
+  "fixed inset-x-0 bottom-0 z-50 flex w-full flex-col rounded-t-[10px] border bg-background will-change: transform",
   className
 )}
 
       style={{
         maxHeight: "calc(100dvh - 64px)",
         minHeight: "20dvh",
-        willChange: "transform",
-        backfaceVisibility: "hidden",      }}
-      drag="y"
-      dragConstraints={{ top: 0, bottom: 0 }}
-      dragElastic={0.3} // smooth pull feel
+      }}
     >
       {/* Grab handle */}
       <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted cursor-grab" />
@@ -53,7 +49,7 @@ const DrawerContent = React.forwardRef<
         {children}
       </div>
     </DrawerPrimitive.Content>
-  </>
+  </DrawerPortal>
 ));
 
 
