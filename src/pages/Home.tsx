@@ -18,6 +18,9 @@ const goToSignup = () => {
       {/* HEADER */}
       <header className="bg-[#517efe] shadow-[0_4px_0_#4971e5]">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between text-white">
+          <div className="background-white">
+            <img src="./public/favicon.svg" alt="Readigo logo" className="w-8 h-8 " />
+          </div>
           <div className="text-xl font-extrabold tracking-wide">
             Readigo
           </div>
