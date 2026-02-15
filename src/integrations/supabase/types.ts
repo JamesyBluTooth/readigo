@@ -250,47 +250,52 @@ export type Database = {
         }
         Relationships: []
       }
-      daily_challenges: {
+      friend_challenges: {
         Row: {
-          challenge_date: string
-          challenge_type: string
-          completed_at: string | null
-          created_at: string
-          current_progress: number
-          expires_at: string
+          book_id: string | null
+          completed: boolean | null
+          created_at: string | null
+          end_date: string
           id: string
-          is_completed: boolean
-          target_value: number
-          updated_at: string | null
-          user_id: string
+          start_date: string
+          target: number | null
+          type: string
+          user_a: string
+          user_b: string
         }
         Insert: {
-          challenge_date?: string
-          challenge_type: string
-          completed_at?: string | null
-          created_at?: string
-          current_progress?: number
-          expires_at: string
+          book_id?: string | null
+          completed?: boolean | null
+          created_at?: string | null
+          end_date: string
           id?: string
-          is_completed?: boolean
-          target_value: number
-          updated_at?: string | null
-          user_id: string
+          start_date: string
+          target?: number | null
+          type: string
+          user_a: string
+          user_b: string
         }
         Update: {
-          challenge_date?: string
-          challenge_type?: string
-          completed_at?: string | null
-          created_at?: string
-          current_progress?: number
-          expires_at?: string
+          book_id?: string | null
+          completed?: boolean | null
+          created_at?: string | null
+          end_date?: string
           id?: string
-          is_completed?: boolean
-          target_value?: number
-          updated_at?: string | null
-          user_id?: string
+          start_date?: string
+          target?: number | null
+          type?: string
+          user_a?: string
+          user_b?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "friend_challenges_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       friendships: {
         Row: {
@@ -440,6 +445,7 @@ export type Database = {
           book_id: string
           created_at: string
           id: string
+          logged_date: string | null
           notes: string | null
           pages_read: number
           time_spent_minutes: number | null
@@ -449,6 +455,7 @@ export type Database = {
           book_id: string
           created_at?: string
           id?: string
+          logged_date?: string | null
           notes?: string | null
           pages_read: number
           time_spent_minutes?: number | null
@@ -458,6 +465,7 @@ export type Database = {
           book_id?: string
           created_at?: string
           id?: string
+          logged_date?: string | null
           notes?: string | null
           pages_read?: number
           time_spent_minutes?: number | null
@@ -516,7 +524,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      mutual_friends: {
+        Row: {
+          friend_profile_id: string | null
+          profile_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_follower_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "friendships_following_id_fkey"
+            columns: ["friend_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Functions: {
       award_achievement: {
@@ -530,6 +559,10 @@ export type Database = {
       ensure_reading_stats_for_week: { Args: never; Returns: undefined }
       generate_daily_challenge: { Args: { p_user_id: string }; Returns: string }
       generate_friend_code: { Args: never; Returns: string }
+      generate_weekly_challenge: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
