@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2 } from "lucide-react";
+import Loading from "../ui/loading";
 
 interface Friend {
   user_id: string;
@@ -87,27 +88,26 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-10">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-      </div>
+      <Loading></Loading>
     );
   }
 
   if (friends.length === 0) {
     return (
-      <Card className="p-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          No friends yet. A little lonely, but easily fixed.
-        </p>
+      <Card variant="empty">
+        <CardHeader>
+          Friends
+        </CardHeader>
       </Card>
     );
   }
 
   return (
-    <Card className="p-5">
-      <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-4">
+    <Card>
+      <CardHeader>
         Friends
-      </div>
+      </CardHeader>
+
 
       <div className="flex flex-col">
         {friends.map((friend) => (

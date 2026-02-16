@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card , CardDisplayBlock, CardHeader } from "@/components/ui/card";
 import { Copy, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,11 +30,9 @@ export const FriendCodeCard = ({ friendCode }: FriendCodeCardProps) => {
 
   return (
     <Card variant="important">
-      <div className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        Your friend code
-      </div>
+      <CardHeader>Your Friend Code</CardHeader>
 
-      <div className="flex items-center justify-between rounded-[16px] bg-[#eef1ff] px-4 py-3 font-mono font-bold tracking-[0.2em]">
+      <CardDisplayBlock>
         <span className="text-lg">{friendCode}</span>
 
         <div className="flex gap-1">
@@ -58,7 +56,7 @@ export const FriendCodeCard = ({ friendCode }: FriendCodeCardProps) => {
             <Share2 className="h-4 w-4" />
           </Button>
         </div>
-      </div>
+      </CardDisplayBlock>
     </Card>
   );
 };

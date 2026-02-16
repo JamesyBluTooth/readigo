@@ -1,0 +1,122 @@
+import { useEffect, useState } from "react";
+
+interface BookStageProps {
+  totalPages: number;
+  currentPage: number;
+  leftInitials: string;
+  rightInitials: string;
+}
+
+export const BookStage = ({
+  totalPages,
+  currentPage: initialPage,
+  leftInitials,
+  rightInitials,
+}: BookStageProps) => {
+  const [currentPage, setCurrentPage] = useState(initialPage);
+
+  const avatarColours = [
+    "#517efe",
+    "#dfab14",
+    "#5c9ead",
+    "#c06c84",
+    "#6a994e",
+    "#8d6cab",
+    "#e76f51",
+    "#3a86ff",
+  ];
+
+  const randomColour = () =>
+    avatarColours[Math.floor(Math.random() * avatarColours.length)];
+
+  const getTextColour = (bg: string) => {
+    const r = parseInt(bg.substr(1, 2), 16);
+    const g = parseInt(bg.substr(3, 2), 16);
+    const b = parseInt(bg.substr(5, 2), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 160 ? "#222" : "#fff";
+  };
+
+  const [leftColor, setLeftColor] = useState(randomColour());
+  const [rightColor, setRightColor] = useState(randomColour());
+
+  useEffect(() => {
+    setLeftColor(randomColour());
+    setRightColor(randomColour());
+  }, []);
+
+  // Determine how many lines to show as "highlighted"
+  const getVisibleLines = () => {
+    const totalLines = 12; // 6 left + 6 right
+    if (currentPage === 0) return 0;
+    if (currentPage >= totalPages) return totalLines;
+
+    const usableLines = totalLines - 1; // reserve last line
+    let visible = Math.ceil((currentPage / totalPages) * usableLines);
+    return Math.max(1, visible);
+  };
+
+  const visibleLines = getVisibleLines();
+
+  // Deterministic widths: 5 long, 3 medium, 4 short
+  const lineWidths = [
+    "w-full",
+    "w-[55%]",
+    "w-full",
+    "w-[75%]",
+    "w-[55%]",
+    "w-full",
+    "w-[75%]",
+    "w-[55%]",
+    "w-full",
+    "w-[75%]",
+    "w-[55%]",
+    "w-full",
+  ];
+
+  // Render left or right page lines
+  const renderLines = (startIdx: number) =>
+    Array(6)
+      .fill(0)
+      .map((_, idx) => {
+        const lineIndex = startIdx + idx;
+        const isVisible = lineIndex < visibleLines;
+        const widthClass = lineWidths[lineIndex];
+        return (
+          <div
+            key={idx}
+            className={`h-[8px] translate-y-[2px] rounded bg-[#3c3c3c] ${widthClass} ${
+              isVisible ? "opacity-45 animate-appear" : "opacity-15"
+            }`}
+            style={{ animationDelay: isVisible ? `${lineIndex * 0.15}s` : "0s" }}
+          />
+        );
+      });
+
+  return (
+    <div className="relative mb-4 grid h-[140px] place-items-center rounded-[16px] bg-gradient-to-b from-[rgba(81,126,254,0.12)] to-[rgba(81,126,254,0.04)]">
+      {/* Left Avatar */}
+      <div
+        className="absolute left-3 top-1/2 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full text-sm font-bold tracking-wide"
+        style={{ background: leftColor, color: getTextColour(leftColor) }}
+      >
+        {leftInitials}
+      </div>
+
+      {/* Book */}
+      <div className="grid h-[100px] w-[90%] max-w-[150px] grid-cols-[1fr_4px_1fr] rounded-[12px] bg-[#fdfdfb] px-3 py-3 shadow-[0_2px_0_#e5e7eb]">
+        <div className="grid auto-rows-min gap-1 pr-1">{renderLines(0)}</div>
+        <div className="rounded bg-gradient-to-r from-transparent via-[#e5e7eb] to-transparent" />
+        <div className="grid auto-rows-min gap-1 pl-1">{renderLines(6)}</div>
+      </div>
+
+      {/* Right Avatar */}
+      <div
+        className="absolute right-3 top-1/2 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full text-sm font-bold tracking-wide"
+        style={{ background: rightColor, color: getTextColour(rightColor) }}
+      >
+        {rightInitials}
+      </div>
+    </div>
+  );
+};

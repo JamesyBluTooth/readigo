@@ -7,6 +7,7 @@ import { FriendShelf } from "@/components/social/FriendShelf";
 import { AddFriendModal } from "@/components/social/AddFriendModal";
 import { FriendProfileModal } from "@/components/social/FriendProfileModal";
 import { FriendCodeCard } from "@/components/social/FriendCodeCard";
+import FriendChallenge from "@/components/social/FriendChallenge";
 
 export const Social = () => {
   const [myFriendCode, setMyFriendCode] = useState("");
@@ -14,6 +15,7 @@ export const Social = () => {
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     loadMyFriendCode();
@@ -23,6 +25,8 @@ export const Social = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      setUserId(user.id);
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -77,6 +81,9 @@ export const Social = () => {
 <div className="space-y-8">
   <div className="max-w-4xl mx-auto space-y-8">
   <FriendCodeCard friendCode={myFriendCode} />
+
+  {userId && <FriendChallenge userId={userId} />}
+  
   <FriendShelf
     key={refreshKey}
     onFriendClick={handleFriendClick}

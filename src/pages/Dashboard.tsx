@@ -50,14 +50,12 @@ export const Dashboard = () => {
 
   const [currentBook, setCurrentBook] = useState<CurrentBook | undefined>();
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
-    setLoading(true);
 
     const { data: progressData } = await supabase
       .from("progress_entries")
@@ -97,8 +95,6 @@ export const Dashboard = () => {
 
       setStats((prev) => ({ ...prev, booksCompletedThisYear: booksThisYear }));
     }
-
-    setLoading(false);
   };
 
   const calculateReadingStreak = (progressData: any[]) => {
@@ -128,17 +124,6 @@ export const Dashboard = () => {
   const handleContinueReading = (bookId: string) => {
     setSelectedBookId(bookId);
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>

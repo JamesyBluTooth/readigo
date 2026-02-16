@@ -1,4 +1,4 @@
-import { BookMarked, Home, Library, User, Settings, Trophy, Users, LogOut } from "lucide-react";
+import { BookMarked, Home, Library, User, Users, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "@/components/NavLink";
 
@@ -10,8 +10,8 @@ export const Sidebar = ({ onSignOut }: SidebarProps) => {
   return (
     <aside className="hidden lg:flex flex-col w-[220px] h-screen bg-card border-r border-border p-4 justify-between overflow-hidden">
       <div className="flex items-center gap-2 mb-8 px-2">
-        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-          <BookMarked className="w-6 h-6 text-primary-foreground" />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+          <img src="/favicon.svg" alt="Readigo logo" className="w-32 h-32" />
         </div>
         <h1 className="text-xl font-bold text-foreground">Readigo</h1>
       </div>

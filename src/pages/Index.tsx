@@ -1,37 +1,24 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
-import { Dashboard } from "./Dashboard";
-import { Books } from "./Books";
-import Profile from "./Profile";
-import { Social } from "./Social";
-import Settings from "./Settings";
 import { Sidebar } from "@/components/Sidebar";
 import { RightPanel } from "@/components/RightPanel";
 import { MobileNav } from "@/components/MobileNav";
 import { FriendFeed } from "@/components/social/FriendFeed";
 import { Outlet, useLocation } from "react-router-dom";
 import { HomePage } from "@/pages/Home";
+import { supabase } from "@/integrations/supabase/client";
 
-const Index = () => {
-  const [session, setSession] = useState<any>(null);
+interface IndexProps {
+  session: any | null;
+}
+
+const Index = ({ session }: IndexProps) => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const location = useLocation();
 
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
+  // -----------------------------------
+  // Profile + Theme logic
+  // -----------------------------------
   useEffect(() => {
     if (!session?.user) {
       setShowOnboarding(false);
@@ -50,8 +37,7 @@ const Index = () => {
 
         if (!cancelled) {
           setShowOnboarding(!profile?.onboarding_completed);
-          
-          // Apply theme preference
+
           if (profile?.theme_preference) {
             applyTheme(profile.theme_preference);
           }
@@ -70,7 +56,9 @@ const Index = () => {
     };
   }, [session?.user]);
 
+  // -----------------------------------
   // Theme application logic
+  // -----------------------------------
   useEffect(() => {
     const applySystemTheme = () => {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -85,10 +73,9 @@ const Index = () => {
   }, []);
 
   const applyTheme = (theme: string) => {
-    // Add a small delay to ensure smooth transition
     requestAnimationFrame(() => {
       document.documentElement.classList.remove('light', 'dark', 'bookish');
-      
+
       if (theme === 'system') {
         const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.documentElement.classList.add(isDark ? 'dark' : 'light');
@@ -102,6 +89,9 @@ const Index = () => {
     await supabase.auth.signOut();
   };
 
+  // -----------------------------------
+  // Auth gate
+  // -----------------------------------
   if (!session) {
     const params = new URLSearchParams(location.search);
     const isLoggingIn = params.get("isLoggingIn") === "true";
@@ -113,6 +103,9 @@ const Index = () => {
     return <HomePage />;
   }
 
+  // -----------------------------------
+  // Layout
+  // -----------------------------------
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
       <Sidebar onSignOut={handleSignOut} />

@@ -69,6 +69,17 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		keyframes: {
+			'dot-cycle': {
+  '0%, 60%, 100%': {
+    backgroundColor: 'hsl(var(--muted))',
+    transform: 'scale(1)',
+  },
+  '30%': {
+    backgroundColor: 'hsl(var(--primary))',
+    transform: 'scale(1.15)',
+  },
+},
+
   			'accordion-down': {
   				from: {
   					height: '0'
@@ -143,7 +154,9 @@ export default {
   			'scale-in': 'scale-in 0.2s ease-out',
   			'slide-up': 'slide-up 0.3s ease-out',
   			'slide-out-left': 'slide-out-left 0.8s ease-in',
-  			'slide-out-right': 'slide-out-right 0.8s ease-in'
+  			'slide-out-right': 'slide-out-right 0.8s ease-in',
+			'dot-cycle': 'dot-cycle 1.2s ease-in-out infinite'
+
   		},
   		fontFamily: {
   			sans: [

@@ -250,6 +250,57 @@ export type Database = {
         }
         Relationships: []
       }
+      friend_challenges: {
+        Row: {
+          challenge_type: Database["public"]["Enums"]["friend_challenge_type"]
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          target_value: number | null
+          user_a: string
+          user_b: string
+          week_start: string
+        }
+        Insert: {
+          challenge_type: Database["public"]["Enums"]["friend_challenge_type"]
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          target_value?: number | null
+          user_a: string
+          user_b: string
+          week_start: string
+        }
+        Update: {
+          challenge_type?: Database["public"]["Enums"]["friend_challenge_type"]
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          target_value?: number | null
+          user_a?: string
+          user_b?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friend_challenges_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "friend_challenges_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           created_at: string
@@ -479,25 +530,10 @@ export type Database = {
     Views: {
       mutual_friends: {
         Row: {
-          friend_profile_id: string | null
-          profile_id: string | null
+          user_a: string | null
+          user_b: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "friendships_follower_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "friendships_following_id_fkey"
-            columns: ["friend_profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Functions: {
@@ -512,10 +548,11 @@ export type Database = {
       ensure_reading_stats_for_week: { Args: never; Returns: undefined }
       generate_daily_challenge: { Args: { p_user_id: string }; Returns: string }
       generate_friend_code: { Args: never; Returns: string }
+      generate_weekly_friend_challenges: { Args: never; Returns: undefined }
       start_of_week: { Args: { d: string }; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      friend_challenge_type: "pages" | "time" | "start_book" | "finish_book"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -642,6 +679,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      friend_challenge_type: ["pages", "time", "start_book", "finish_book"],
+    },
   },
 } as const
