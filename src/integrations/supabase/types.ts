@@ -250,53 +250,6 @@ export type Database = {
         }
         Relationships: []
       }
-      friend_challenges: {
-        Row: {
-          book_id: string | null
-          completed: boolean | null
-          created_at: string | null
-          end_date: string
-          id: string
-          start_date: string
-          target: number | null
-          type: string
-          user_a: string
-          user_b: string
-        }
-        Insert: {
-          book_id?: string | null
-          completed?: boolean | null
-          created_at?: string | null
-          end_date: string
-          id?: string
-          start_date: string
-          target?: number | null
-          type: string
-          user_a: string
-          user_b: string
-        }
-        Update: {
-          book_id?: string | null
-          completed?: boolean | null
-          created_at?: string | null
-          end_date?: string
-          id?: string
-          start_date?: string
-          target?: number | null
-          type?: string
-          user_a?: string
-          user_b?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "friend_challenges_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       friendships: {
         Row: {
           created_at: string
@@ -559,10 +512,7 @@ export type Database = {
       ensure_reading_stats_for_week: { Args: never; Returns: undefined }
       generate_daily_challenge: { Args: { p_user_id: string }; Returns: string }
       generate_friend_code: { Args: never; Returns: string }
-      generate_weekly_challenge: {
-        Args: { p_user_id: string }
-        Returns: undefined
-      }
+      start_of_week: { Args: { d: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
