@@ -13,27 +13,20 @@ export const BookStage = ({
   leftInitials,
   rightInitials,
 }: BookStageProps) => {
-  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [animatedPage, setAnimatedPage] = useState(0); // start at 0 to animate
 
   const avatarColours = [
-    "#517efe",
-    "#dfab14",
-    "#5c9ead",
-    "#c06c84",
-    "#6a994e",
-    "#8d6cab",
-    "#e76f51",
-    "#3a86ff",
+    "#517efe","#dfab14","#5c9ead","#c06c84",
+    "#6a994e","#8d6cab","#e76f51","#3a86ff",
   ];
 
-  const randomColour = () =>
-    avatarColours[Math.floor(Math.random() * avatarColours.length)];
+  const randomColour = () => avatarColours[Math.floor(Math.random()*avatarColours.length)];
 
   const getTextColour = (bg: string) => {
-    const r = parseInt(bg.substr(1, 2), 16);
-    const g = parseInt(bg.substr(3, 2), 16);
-    const b = parseInt(bg.substr(5, 2), 16);
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    const r = parseInt(bg.substr(1,2),16);
+    const g = parseInt(bg.substr(3,2),16);
+    const b = parseInt(bg.substr(5,2),16);
+    const brightness = (r*299 + g*587 + b*114)/1000;
     return brightness > 160 ? "#222" : "#fff";
   };
 
@@ -43,55 +36,65 @@ export const BookStage = ({
   useEffect(() => {
     setLeftColor(randomColour());
     setRightColor(randomColour());
-  }, []);
 
-  // Determine how many lines to show as "highlighted"
+    // Animate each line one by one
+    let current = 0;
+    const step = () => {
+      if (current <= initialPage) {
+        setAnimatedPage(current);
+        current++;
+        requestAnimationFrame(step); // smooth animation frame
+      }
+    };
+    step();
+  }, [initialPage]);
+
   const getVisibleLines = () => {
     const totalLines = 12; // 6 left + 6 right
-    if (currentPage === 0) return 0;
-    if (currentPage >= totalPages) return totalLines;
+    if (animatedPage === 0) return 0;
+    if (animatedPage >= totalPages) return totalLines;
 
-    const usableLines = totalLines - 1; // reserve last line
-    let visible = Math.ceil((currentPage / totalPages) * usableLines);
+    const usableLines = totalLines - 1;
+    let visible = Math.ceil((animatedPage / totalPages) * usableLines);
     return Math.max(1, visible);
   };
 
   const visibleLines = getVisibleLines();
 
-  // Deterministic widths: 5 long, 3 medium, 4 short
   const lineWidths = [
-    "w-full",
-    "w-[55%]",
-    "w-full",
-    "w-[75%]",
-    "w-[55%]",
-    "w-full",
-    "w-[75%]",
-    "w-[55%]",
-    "w-full",
-    "w-[75%]",
-    "w-[55%]",
-    "w-full",
+    "w-full","w-[55%]","w-full","w-[75%]","w-[55%]","w-full",
+    "w-[75%]","w-[55%]","w-full","w-[75%]","w-[55%]","w-full",
   ];
 
-  // Render left or right page lines
-  const renderLines = (startIdx: number) =>
-    Array(6)
-      .fill(0)
-      .map((_, idx) => {
-        const lineIndex = startIdx + idx;
-        const isVisible = lineIndex < visibleLines;
-        const widthClass = lineWidths[lineIndex];
-        return (
-          <div
-            key={idx}
-            className={`h-[8px] translate-y-[2px] rounded bg-[#3c3c3c] ${widthClass} ${
-              isVisible ? "opacity-45 animate-appear" : "opacity-15"
-            }`}
-            style={{ animationDelay: isVisible ? `${lineIndex * 0.15}s` : "0s" }}
-          />
-        );
-      });
+const renderLines = (startIdx: number) =>
+  Array(6)
+    .fill(0)
+    .map((_, idx) => {
+      const lineIndex = startIdx + idx;
+      const usableLines = 12 - 1;
+      const visibleLines = Math.max(
+        1,
+        Math.ceil((initialPage / totalPages) * usableLines)
+      );
+      const isVisible = lineIndex < visibleLines;
+      const widthClass = lineWidths[lineIndex];
+
+      return (
+        <div
+  key={lineIndex}
+  className={`h-[8px] rounded ${widthClass} ${
+    isVisible ? "animate-appear bg-[#3c3c3c]" : "opacity-[0.15] bg-[#3c3c3c]"
+  }`}
+  style={{
+    animationDelay: isVisible ? `${lineIndex * 0.15}s` : "0s",
+    opacity: isVisible ? 0 : 0.15, // start invisible
+  }}
+/>
+
+      );
+    });
+
+
 
   return (
     <div className="relative mb-4 grid h-[140px] place-items-center rounded-[16px] bg-gradient-to-b from-[rgba(81,126,254,0.12)] to-[rgba(81,126,254,0.04)]">
