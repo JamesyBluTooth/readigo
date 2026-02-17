@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2 } from "lucide-react";
 import Loading from "../ui/loading";
 
 interface Friend {
   user_id: string;
   display_name: string;
-  avatar_url: string | null;
   friend_code: string;
   current_book_title: string | null;
   current_book_progress: number;
@@ -47,7 +45,7 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
 
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("user_id, display_name, avatar_url, friend_code")
+        .select("user_id, display_name, friend_code")
         .in("user_id", followingIds);
 
       if (profilesError) throw profilesError;
@@ -70,7 +68,6 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
           return {
             user_id: profile.user_id,
             display_name: profile.display_name || "Anonymous",
-            avatar_url: profile.avatar_url,
             friend_code: profile.friend_code,
             current_book_title: currentBook?.title || null,
             current_book_progress: progress,
@@ -126,7 +123,6 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
           >
             <div className="flex items-center gap-3">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={friend.avatar_url || undefined} />
                 <AvatarFallback className="font-bold text-sm text-muted-foreground">
                   {friend.display_name[0]?.toUpperCase()}
                 </AvatarFallback>

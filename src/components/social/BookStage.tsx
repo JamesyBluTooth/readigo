@@ -1,41 +1,25 @@
 import { useEffect, useState } from "react";
+import type { Tables } from "@/integrations/supabase/types"
+import { ProfileAvatar } from "@/components/profile/profile-avatar"
+
 
 interface BookStageProps {
   totalPages: number;
   currentPage: number;
-  leftInitials: string;
-  rightInitials: string;
+  leftProfile: Tables<"profiles"> | null;
+  rightProfile: Tables<"profiles"> | null;
 }
+
 
 export const BookStage = ({
   totalPages,
   currentPage: initialPage,
-  leftInitials,
-  rightInitials,
+  leftProfile,
+  rightProfile,
 }: BookStageProps) => {
   const [animatedPage, setAnimatedPage] = useState(0); // start at 0 to animate
 
-  const avatarColours = [
-    "#517efe","#dfab14","#5c9ead","#c06c84",
-    "#6a994e","#8d6cab","#e76f51","#3a86ff",
-  ];
-
-  const randomColour = () => avatarColours[Math.floor(Math.random()*avatarColours.length)];
-
-  const getTextColour = (bg: string) => {
-    const r = parseInt(bg.substr(1,2),16);
-    const g = parseInt(bg.substr(3,2),16);
-    const b = parseInt(bg.substr(5,2),16);
-    const brightness = (r*299 + g*587 + b*114)/1000;
-    return brightness > 160 ? "#222" : "#fff";
-  };
-
-  const [leftColor, setLeftColor] = useState(randomColour());
-  const [rightColor, setRightColor] = useState(randomColour());
-
   useEffect(() => {
-    setLeftColor(randomColour());
-    setRightColor(randomColour());
 
     // Animate each line one by one
     let current = 0;
@@ -99,12 +83,10 @@ const renderLines = (startIdx: number) =>
   return (
     <div className="relative mb-4 grid h-[140px] place-items-center rounded-[16px] bg-gradient-to-b from-[rgba(81,126,254,0.12)] to-[rgba(81,126,254,0.04)]">
       {/* Left Avatar */}
-      <div
-        className="absolute left-3 top-1/2 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full text-sm font-bold tracking-wide"
-        style={{ background: leftColor, color: getTextColour(leftColor) }}
-      >
-        {leftInitials}
-      </div>
+      <div className="absolute left-3 top-1/2 -translate-y-1/2">
+  {leftProfile && <ProfileAvatar profile={leftProfile} size="180" />}
+</div>
+
 
       {/* Book */}
       <div className="grid h-[100px] w-[90%] max-w-[150px] grid-cols-[1fr_4px_1fr] rounded-[12px] bg-[#fdfdfb] px-3 py-3 shadow-[0_2px_0_#e5e7eb]">
@@ -114,12 +96,10 @@ const renderLines = (startIdx: number) =>
       </div>
 
       {/* Right Avatar */}
-      <div
-        className="absolute right-3 top-1/2 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full text-sm font-bold tracking-wide"
-        style={{ background: rightColor, color: getTextColour(rightColor) }}
-      >
-        {rightInitials}
-      </div>
+      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+  {rightProfile && <ProfileAvatar profile={rightProfile} size="56" />}
+</div>
+
     </div>
   );
 };

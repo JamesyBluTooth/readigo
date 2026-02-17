@@ -22,6 +22,10 @@ export default function FriendChallenge({ userId }: Props) {
   const [yourPages, setYourPages] = useState(0)
   const [friendPages, setFriendPages] = useState(0)
 
+  const [yourProfile, setYourProfile] = useState<Tables<"profiles"> | null>(null)
+const [friendProfile, setFriendProfile] = useState<Tables<"profiles"> | null>(null)
+
+
   useEffect(() => {
     async function fetchData() {
       setLoading(true)
@@ -43,6 +47,21 @@ export default function FriendChallenge({ userId }: Props) {
         }
 
         setChallenge(challengeData)
+
+        const { data: profileData } = await supabase
+  .from("profiles")
+  .select("*")
+  .in("user_id", [challengeData.user_a, challengeData.user_b])
+
+  const profiles = profileData ?? []
+
+const yourProfile = profiles.find(p => p.user_id === userId)
+const friendProfile = profiles.find(p => p.user_id !== userId)
+
+setYourProfile(yourProfile ?? null)
+setFriendProfile(friendProfile ?? null)
+
+
 
         const { data: statsData } = await supabase
           .from("reading_stats")
@@ -74,6 +93,10 @@ export default function FriendChallenge({ userId }: Props) {
     fetchData()
   }, [userId, weekStart])
 
+  const friendDisplayName =
+  friendProfile?.display_name?.trim() || "Friend"
+
+
   if (loading) return (
     <Card>
       <Loading />
@@ -89,12 +112,10 @@ export default function FriendChallenge({ userId }: Props) {
   )
 
   const totalPages = challenge.target_value ?? 100
+  const progressPages = yourPages + friendPages
   const yourPercent = Math.min(100, (yourPages / totalPages) * 100)
   const friendPercent = Math.min(100, (friendPages / totalPages) * 100)
-
-  // Avatar initials
-  const leftInitials = userId === challenge.user_a ? "JM" : "AR"
-  const rightInitials = userId === challenge.user_b ? "JM" : "AR"
+  const progressPercent = yourPercent + friendPercent
 
   return (
     <Card>
@@ -103,9 +124,9 @@ export default function FriendChallenge({ userId }: Props) {
       {/* Book Stage */}
       <BookStage
         totalPages={totalPages}
-        currentPage={yourPages}
-        leftInitials={leftInitials}
-        rightInitials={rightInitials}
+        currentPage={progressPages}
+        leftProfile={yourProfile}
+        rightProfile={friendProfile}
       />
 
       {/* Title */}
@@ -117,13 +138,13 @@ export default function FriendChallenge({ userId }: Props) {
       <div style={{ height: "14px", borderRadius: "999px", background: "#e5e7eb", overflow: "hidden", marginBottom: "8px" }}>
         <div style={{
           height: "100%",
-          width: `${yourPercent}%`,
+          width: `${progressPercent}%`,
           background: "linear-gradient(90deg, #517efe, #4971e5)",
           transition: "width 0.4s ease"
         }} />
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#6b6b6b", marginBottom: "16px" }}>
-        <span>{yourPages} / {totalPages} pages</span>
+        <span>{progressPages} / {totalPages} pages</span>
         <span>This week</span>
       </div>
 
@@ -137,7 +158,7 @@ export default function FriendChallenge({ userId }: Props) {
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#517efe" }} /> Friend
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#517efe" }} /> {friendDisplayName}
           </div>
           <span>{friendPages} pages</span>
         </div>
