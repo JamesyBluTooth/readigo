@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -172,7 +172,7 @@ export default function AvatarCustomization() {
           <Button
             key={feature}
             type="button"
-            variant={selectedFeature === feature ? "default" : "outline"}
+            variant="optional"
             size="sm"
             onClick={() => onSelect(feature)}
             className="capitalize"
@@ -221,7 +221,7 @@ export default function AvatarCustomization() {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button
-            variant="ghost"
+            variant="link"
             size="icon"
             onClick={() => navigate(-1)}
           >
@@ -233,30 +233,30 @@ export default function AvatarCustomization() {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Preview Card */}
           <Card>
-            <CardHeader>
-              <CardTitle>Preview</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center space-y-4">
+            <Card.Header>
+              <Card.Title>Preview</Card.Title>
+            </Card.Header>
+            <Card.Content className="flex flex-col items-center space-y-4">
               <Avatar className="w-48 h-48">
                 <AvatarImage src={displayAvatarUrl} />
               </Avatar>
               <Button
                 onClick={handleRandomize}
-                variant="outline"
+                variant="secondary"
                 className="w-full"
               >
                 <Shuffle className="w-4 h-4 mr-2" />
                 Randomize
               </Button>
-            </CardContent>
+            </Card.Content>
           </Card>
 
           {/* Customization Options */}
           <Card>
-            <CardHeader>
-              <CardTitle>Customization</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6 max-h-[600px] overflow-y-auto">
+            <Card.Header>
+              <Card.Title>Customization</Card.Title>
+            </Card.Header>
+            <Card.Content className="space-y-6 max-h-[600px] overflow-y-auto">
               {/* Background Color */}
               <div className="space-y-3">
                 <Label className="text-sm font-semibold">Background Color</Label>
@@ -369,14 +369,14 @@ export default function AvatarCustomization() {
                 selectedFeature={selectedNose}
                 onSelect={(feature) => selectFeature(feature, setSelectedNose)}
               />
-            </CardContent>
+            </Card.Content>
           </Card>
         </div>
 
         {/* Action Buttons */}
         <div className="flex gap-4 justify-end">
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={() => navigate(-1)}
           >
             Cancel

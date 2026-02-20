@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Check, Pencil } from "lucide-react";
@@ -48,7 +48,7 @@ export const BookCard = ({
         className="cursor-pointer group overflow-hidden "
         onClick={onClick}
       >
-        <CardContent className="p-4">
+        <Card.Content className="p-4">
           <div className="flex gap-4">
             <div className="w-24 h-32 bg-muted rounded-lg overflow-hidden flex-shrink-0 shadow-md">
               {coverUrl ? (
@@ -116,7 +116,7 @@ export const BookCard = ({
             </div>
           </div>
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
 
     <EditBookModal

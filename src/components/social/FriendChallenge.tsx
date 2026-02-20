@@ -139,16 +139,28 @@ export default function FriendChallenge({ userId }: Props) {
     fetchData()
   }, [userId, weekStart])
 
-  /* =========================
-     Derived Values
-  ========================== */
-  const totalPages = challenge?.target_value ?? 100
-  const progressPages = yourPages + friendPages
-  const isCompleted = progressPages >= totalPages
+ /* =========================
+   Derived Values
+========================== */
+const totalPages = challenge?.target_value ?? 100
 
-  const yourPercent = Math.min(100, (yourPages / totalPages) * 100)
-  const friendPercent = Math.min(100, (friendPages / totalPages) * 100)
-  const progressPercent = yourPercent + friendPercent
+const rawProgressPages = yourPages + friendPages
+const isCompleted = rawProgressPages >= totalPages
+
+// Freeze values once completed
+const progressPages = isCompleted ? totalPages : rawProgressPages
+
+const adjustedYourPages = isCompleted
+  ? Math.min(yourPages, totalPages)
+  : yourPages
+
+const adjustedFriendPages = isCompleted
+  ? Math.min(friendPages, totalPages - adjustedYourPages)
+  : friendPages
+
+const yourPercent = Math.min(100, (adjustedYourPages / totalPages) * 100)
+const friendPercent = Math.min(100, (adjustedFriendPages / totalPages) * 100)
+const progressPercent = yourPercent + friendPercent
 
   /* =========================
      Completion Logic
@@ -301,11 +313,11 @@ export default function FriendChallenge({ userId }: Props) {
       <div style={{ display: "grid", gap: "8px", marginBottom: "16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
           <span>You</span>
-          <span>{yourPages} pages</span>
+          <span>{adjustedYourPages} pages</span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
           <span>{friendDisplayName}</span>
-          <span>{friendPages} pages</span>
+          <span>{adjustedFriendPages} pages</span>
         </div>
       </div>
       

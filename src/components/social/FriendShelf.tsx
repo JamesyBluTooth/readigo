@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Loading from "../ui/loading";
 
@@ -92,18 +92,18 @@ export const FriendShelf = ({ onFriendClick }: FriendShelfProps) => {
   if (friends.length === 0) {
     return (
       <Card variant="empty">
-        <CardHeader>
+        <Card.Header>
           Friends
-        </CardHeader>
+        </Card.Header>
       </Card>
     );
   }
 
   return (
     <Card>
-      <CardHeader>
+      <Card.Header>
         Friends
-      </CardHeader>
+      </Card.Header>
 
 
       <div className="flex flex-col">

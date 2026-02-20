@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen } from "lucide-react";
@@ -20,17 +20,17 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
   if (!book) {
     return (
       <Card className="animate-fade-in">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+        <Card.Header>
+          <Card.Title className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary" />
             Currently Reading
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </Card.Title>
+        </Card.Header>
+        <Card.Content>
           <div className="text-center py-8 text-muted-foreground">
             <p>No books in progress. Start reading a book!</p>
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
     );
   }
@@ -42,14 +42,14 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
 
   return (
     <Card className="animate-fade-in">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+      <Card.Header>
+        <Card.Title className="flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-primary" />
           Currently Reading
-        </CardTitle>
-      </CardHeader>
+        </Card.Title>
+      </Card.Header>
 
-      <CardContent className="space-y-4">
+      <Card.Content className="space-y-4">
         {<div className="flex gap-4">
           {book.cover_url && (
             <img
@@ -93,7 +93,7 @@ export const CurrentlyReading = ({ book, onContinue }: CurrentlyReadingProps) =>
         <Button onClick={() => onContinue(book.id)} className="w-full">
           Continue Reading
         </Button>
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 };

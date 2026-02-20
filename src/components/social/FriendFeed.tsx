@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Users, CheckCircle2, Star, Flame, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -98,13 +98,13 @@ export const FriendFeed = () => {
 
   return (
     <Card className="animate-fade-in">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+      <Card.Header>
+        <Card.Title className="flex items-center gap-2">
           <Users className="w-5 h-5 text-primary" />
           Friend Feed
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </Card.Title>
+      </Card.Header>
+      <Card.Content>
         {loading ? (
           <div className="flex items-center justify-center h-[300px]">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -137,7 +137,7 @@ export const FriendFeed = () => {
             </div>
           </ScrollArea>
         )}
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 };

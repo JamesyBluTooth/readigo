@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BookMarked } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -102,20 +102,20 @@ export const AuthPage = ({ initialMode }: { initialMode?: "login" | "signup" }) 
           ← Back
         </button>
       <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center space-y-4">
+        <Card.Header className="text-center space-y-4">
           <div className="flex justify-center">
             <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
-              <BookMarked className="w-10 h-10 text-primary-foreground" />
+              <img src="/favicon.svg" />
             </div>
           </div>
-          <CardTitle className="text-3xl font-bold">
+          <Card.Title className="text-3xl font-bold">
             {isLogin ? "Welcome Back" : "Get Started"}
-          </CardTitle>
-          <CardDescription>
+          </Card.Title>
+          <Card.Description>
             {isLogin ? "Sign in to track your reading journey" : "Create an account to start tracking books"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </Card.Description>
+        </Card.Header>
+        <Card.Content>
           <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -163,7 +163,7 @@ export const AuthPage = ({ initialMode }: { initialMode?: "login" | "signup" }) 
               {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
             </button>
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>

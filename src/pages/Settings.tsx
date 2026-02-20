@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -165,14 +165,14 @@ export default function Settings() {
 
       {/* Account Section */}
       <Card>
-        <CardHeader>
+        <Card.Header>
           <div className="flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
-            <CardTitle>Account</CardTitle>
+            <Card.Title>Account</Card.Title>
           </div>
-          <CardDescription>Manage your profile and friend code</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+          <Card.Description>Manage your profile and friend code</Card.Description>
+        </Card.Header>
+        <Card.Content className="space-y-6">
           <div className="flex items-center gap-4">
             <AvatarDisplay
               avatarType={profile.avatar_type}
@@ -201,7 +201,7 @@ export default function Settings() {
                 {profile.friend_code}
               </div>
               <Button
-                variant="outline"
+                variant="secondary"
                 size="icon"
                 className="h-auto w-12"
                 onClick={copyFriendCode}
@@ -213,19 +213,19 @@ export default function Settings() {
               Share this code with friends so they can find you
             </p>
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {/* Security Section */}
       <Card>
-        <CardHeader>
+        <Card.Header>
           <div className="flex items-center gap-2">
             <Lock className="h-5 w-5 text-primary" />
-            <CardTitle>Security</CardTitle>
+            <Card.Title>Security</Card.Title>
           </div>
-          <CardDescription>Keep your account safe and secure</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          <Card.Description>Keep your account safe and secure</Card.Description>
+        </Card.Header>
+        <Card.Content className="space-y-4">
           <div className="space-y-2">
             <Label>Email Address</Label>
             <div className="px-4 py-2 bg-muted rounded-lg text-muted-foreground">
@@ -233,7 +233,7 @@ export default function Settings() {
             </div>
           </div>
 
-          <Button variant="outline" onClick={() => setChangePasswordOpen(true)}>
+          <Button variant="link" onClick={() => setChangePasswordOpen(true)}>
             <Lock className="h-4 w-4 mr-2" />
             Change Password
           </Button>
@@ -245,19 +245,19 @@ export default function Settings() {
             </div>
             <Switch disabled />
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {/* Reading Preferences */}
       <Card>
-        <CardHeader>
+        <Card.Header>
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
-            <CardTitle>Reading Preferences</CardTitle>
+            <Card.Title>Reading Preferences</Card.Title>
           </div>
-          <CardDescription>Customise your reading experience</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+          <Card.Description>Customise your reading experience</Card.Description>
+        </Card.Header>
+        <Card.Content className="space-y-6">
           <div className="space-y-3">
             <Label className="text-base font-semibold">Preferred Reading Units</Label>
             <RadioGroup
@@ -310,19 +310,19 @@ export default function Settings() {
               onCheckedChange={(checked) => updatePreference("show_spoiler_warnings", checked)}
             />
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {/* Appearance */}
       <Card>
-        <CardHeader>
+        <Card.Header>
           <div className="flex items-center gap-2">
             <Palette className="h-5 w-5 text-primary" />
-            <CardTitle>Appearance</CardTitle>
+            <Card.Title>Appearance</Card.Title>
           </div>
-          <CardDescription>Customise how Bookmarked looks</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+          <Card.Description>Customise how Bookmarked looks</Card.Description>
+        </Card.Header>
+        <Card.Content className="space-y-6">
           <div className="space-y-4">
             <Label className="text-base font-semibold">Theme</Label>
             <RadioGroup
@@ -396,19 +396,19 @@ export default function Settings() {
               For when your eyes aren't what they were
             </p>
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {/* Notifications */}
       <Card>
-        <CardHeader>
+        <Card.Header>
           <div className="flex items-center gap-2">
             <Bell className="h-5 w-5 text-primary" />
-            <CardTitle>Notifications</CardTitle>
+            <Card.Title>Notifications</Card.Title>
           </div>
-          <CardDescription>Manage your notification preferences</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          <Card.Description>Manage your notification preferences</Card.Description>
+        </Card.Header>
+        <Card.Content className="space-y-4">
           <div className="flex items-center justify-between">
             <Label>Reading Reminders</Label>
             <Switch
@@ -437,25 +437,25 @@ export default function Settings() {
               onCheckedChange={(checked) => updatePreference("notifications_weekly_summary", checked)}
             />
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {/* Social */}
       <Card>
-        <CardHeader>
+        <Card.Header>
           <div className="flex items-center gap-2">
             <Users className="h-5 w-5 text-primary" />
-            <CardTitle>Social</CardTitle>
+            <Card.Title>Social</Card.Title>
           </div>
-          <CardDescription>Manage your social settings</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button variant="outline" className="w-full justify-start">
+          <Card.Description>Manage your social settings</Card.Description>
+        </Card.Header>
+        <Card.Content className="space-y-4">
+          <Button variant="link" className="w-full justify-start">
             <Users className="h-4 w-4 mr-2" />
             Manage Friends
           </Button>
 
-          <Button variant="outline" className="w-full justify-start">
+          <Button variant="link" className="w-full justify-start">
             <BookOpen className="h-4 w-4 mr-2" />
             Group Memberships
           </Button>
@@ -472,25 +472,25 @@ export default function Settings() {
               onCheckedChange={(checked) => updatePreference("discoverable_by_friend_code", checked)}
             />
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {/* Data & Storage */}
       <Card>
-        <CardHeader>
+        <Card.Header>
           <div className="flex items-center gap-2">
             <Database className="h-5 w-5 text-primary" />
-            <CardTitle>Data & Storage</CardTitle>
+            <Card.Title>Data & Storage</Card.Title>
           </div>
-          <CardDescription>Manage your data and storage</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button variant="outline" className="w-full justify-start" onClick={downloadData}>
+          <Card.Description>Manage your data and storage</Card.Description>
+        </Card.Header>
+        <Card.Content className="space-y-4">
+          <Button variant="link" className="w-full justify-start" onClick={downloadData}>
             <FileText className="h-4 w-4 mr-2" />
             Download My Data
           </Button>
 
-          <Button variant="outline" className="w-full justify-start" onClick={clearCache}>
+          <Button variant="link" className="w-full justify-start" onClick={clearCache}>
             <Database className="h-4 w-4 mr-2" />
             Clear Local Cache
           </Button>
@@ -499,37 +499,37 @@ export default function Settings() {
             <Check className="h-5 w-5 text-success" />
             <span className="text-sm font-medium">Sync Status: Connected</span>
           </div>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {/* Legal & About */}
       <Card>
-        <CardHeader>
+        <Card.Header>
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            <CardTitle>Legal & About</CardTitle>
+            <Card.Title>Legal & About</Card.Title>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <Button variant="ghost" className="w-full justify-start">
+        </Card.Header>
+        <Card.Content className="space-y-2">
+          <Button variant="link" className="w-full justify-start">
             Terms of Service
           </Button>
-          <Button variant="ghost" className="w-full justify-start">
+          <Button variant="link" className="w-full justify-start">
             Privacy Policy
           </Button>
-          <Button variant="ghost" className="w-full justify-start">
+          <Button variant="link" className="w-full justify-start">
             Attributions
           </Button>
           <Separator />
           <p className="text-sm text-muted-foreground px-4 py-2">
             Version 1.0.0
           </p>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       {/* Sign Out */}
       <Card className="border-destructive/50">
-        <CardContent className="pt-6">
+        <Card.Content className="pt-6">
           <Button
             variant="destructive"
             className="w-full"
@@ -539,7 +539,7 @@ export default function Settings() {
             <LogOut className="h-5 w-5 mr-2" />
             Sign Out
           </Button>
-        </CardContent>
+        </Card.Content>
       </Card>
 
       <EditProfileModal

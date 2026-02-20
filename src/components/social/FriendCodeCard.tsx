@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card , CardDisplayBlock, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Copy, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,14 +30,14 @@ export const FriendCodeCard = ({ friendCode }: FriendCodeCardProps) => {
 
   return (
     <Card variant="important">
-      <CardHeader>Your Friend Code</CardHeader>
+      <Card.Header>Your Friend Code</Card.Header>
 
-      <CardDisplayBlock>
+      <Card.DisplayBlock>
         <span className="text-lg">{friendCode}</span>
 
         <div className="flex gap-1">
           <Button
-            variant="ghost"
+            variant="link"
             size="icon"
             onClick={handleCopy}
             className="text-secondary hover:bg-transparent"
@@ -47,7 +47,7 @@ export const FriendCodeCard = ({ friendCode }: FriendCodeCardProps) => {
           </Button>
 
           <Button
-            variant="ghost"
+            variant="link"
             size="icon"
             onClick={handleShare}
             className="text-secondary hover:bg-transparent"
@@ -56,7 +56,7 @@ export const FriendCodeCard = ({ friendCode }: FriendCodeCardProps) => {
             <Share2 className="h-4 w-4" />
           </Button>
         </div>
-      </CardDisplayBlock>
+      </Card.DisplayBlock>
     </Card>
   );
 };
