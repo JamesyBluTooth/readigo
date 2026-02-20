@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { CurrentlyReading } from "@/components/dashboard/CurrentlyReading";
@@ -41,6 +42,8 @@ const getCurrentBook = (books: any[]) => {
 };
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
+
   const [stats, setStats] = useState<DashboardStats>({
     readingSpeed: 0,
     readingStreak: 0,
@@ -121,10 +124,6 @@ export const Dashboard = () => {
     return streak;
   };
 
-  const handleContinueReading = (bookId: string) => {
-    setSelectedBookId(bookId);
-  };
-
   return (
     <>
       <div className="space-y-6">
@@ -164,7 +163,10 @@ export const Dashboard = () => {
           />
         </div>
 
-        <CurrentlyReading book={currentBook} onContinue={handleContinueReading} />
+        <CurrentlyReading
+      book={currentBook}
+      onContinue={(id) => navigate(`/book/${id}`)}
+    />
       </div>
 
       {selectedBookId && (

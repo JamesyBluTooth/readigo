@@ -6,6 +6,8 @@ import { BookStage } from "./BookStage"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import Loading from "../ui/loading"
 
+import { Timer } from "lucide-react"
+
 type FriendChallengeRow = Tables<"friend_challenges">
 type ReadingStatsRow = Tables<"reading_stats">
 
@@ -24,6 +26,48 @@ export default function FriendChallenge({ userId }: Props) {
 
   const [yourProfile, setYourProfile] = useState<Tables<"profiles"> | null>(null)
 const [friendProfile, setFriendProfile] = useState<Tables<"profiles"> | null>(null)
+
+const [timeLeft, setTimeLeft] = useState<{ value: number; unit: "days" | "hours" }>({
+  value: 0,
+  unit: "days",
+})
+
+useEffect(() => {
+  const deadline = new Date(weekStart)
+  deadline.setDate(deadline.getDate() + 7)
+
+  function updateCountdown() {
+    const now = new Date()
+    const diff = deadline.getTime() - now.getTime()
+
+    if (diff <= 0) {
+      setTimeLeft({ value: 0, unit: "days" })
+      return
+    }
+
+    const totalHours = diff / (1000 * 60 * 60)
+    const totalDays = totalHours / 24
+
+    if (totalHours < 24) {
+      setTimeLeft({
+        value: Math.ceil(totalHours),
+        unit: "hours",
+      })
+    } else {
+      setTimeLeft({
+        value: Math.ceil(totalDays),
+        unit: "days",
+      })
+    }
+  }
+
+  updateCountdown()
+
+  // Update every hour normally
+  const interval = setInterval(updateCountdown, 60 * 60 * 1000)
+
+  return () => clearInterval(interval)
+}, [weekStart])
 
 
   useEffect(() => {
@@ -119,7 +163,37 @@ setFriendProfile(friendProfile ?? null)
 
   return (
     <Card>
-      <CardHeader>Friend Challenge</CardHeader>
+      <CardHeader
+  style={{
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  }}
+>
+  <CardHeader>Friend Challenge</CardHeader>
+
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      fontSize: "14px",
+      color: "#6b7280",
+      fontWeight: 700,
+    }}
+  >
+    <Timer size={28} />
+
+    {timeLeft.value === 0 ? (
+      "Ends soon"
+    ) : timeLeft.unit === "days" ? (
+      `${timeLeft.value}D`
+    ) : (
+      `${timeLeft.value}h`
+    )}
+  </div>
+</CardHeader>
 
       {/* Book Stage */}
       <BookStage

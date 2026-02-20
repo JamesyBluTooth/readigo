@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 
 interface StatCardProps {
@@ -11,10 +11,10 @@ interface StatCardProps {
 export const StatCard = ({ title, value, icon: Icon, suffix }: StatCardProps) => {
   return (
     <Card className="animate-fade-in hover-scale">
-      <CardContent className="p-6">
+      <CardTitle className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">{title}</p>
+            <CardHeader>{title}</CardHeader>
             <p className="text-3xl font-bold text-foreground">
               {value}
               {suffix && <span className="text-lg ml-1 text-muted-foreground">{suffix}</span>}
@@ -24,7 +24,7 @@ export const StatCard = ({ title, value, icon: Icon, suffix }: StatCardProps) =>
             <Icon className="w-6 h-6 text-primary" />
           </div>
         </div>
-      </CardContent>
+      </CardTitle>
     </Card>
   );
 };
