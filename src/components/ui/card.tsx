@@ -67,7 +67,7 @@ const CardHeader = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "text-[14px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2",
+      "text-[14px] font-bold uppercase tracking-[0.1em] text-muted-foreground mb-2",
       className
     )}
     {...props}

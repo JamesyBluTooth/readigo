@@ -49,9 +49,8 @@ const Index = ({ session }: IndexProps) => {
       }
     };
 
-    setTimeout(loadProfile, 0);
-
     return () => {
+      console.log(import.meta.env.DEV, "Cleaning up Index effect");
       cancelled = true;
     };
   }, [session?.user]);
