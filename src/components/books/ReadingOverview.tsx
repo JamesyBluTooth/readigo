@@ -15,18 +15,7 @@ export const ReadingOverview = ({
 }: ReadingOverviewProps) => {
   return (
     <Card variant="important">
-      <div
-        style={{
-          fontSize: "0.75rem",
-          fontWeight: 700,
-          color: "#6b6b6b",
-          letterSpacing: "0.04em",
-          textTransform: "uppercase",
-          marginBottom: "0.6rem",
-        }}
-      >
-        Reading overview
-      </div>
+      <Card.Header>Reading Overview</Card.Header>
 
       <div
         style={{

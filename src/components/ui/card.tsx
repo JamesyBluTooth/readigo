@@ -45,6 +45,24 @@ export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants> {}
 
+type CardComponent = React.ForwardRefExoticComponent<
+  CardProps & React.RefAttributes<HTMLDivElement>
+> & {
+  Header: typeof CardHeader
+  Title: typeof CardTitle
+  Content: typeof CardContent
+  Description: typeof CardDescription
+  StatNumber: typeof CardStatNumber
+  StatMeta: typeof CardStatMeta
+  Split: typeof CardSplit
+  SplitDivider: typeof CardSplitDivider
+  SplitSection: typeof CardSplitSection
+  SplitValue: typeof CardSplitValue
+  SplitLabel: typeof CardSplitLabel
+  DisplayBlock: typeof CardDisplayBlock
+  DisplayActions: typeof CardDisplayActions
+}
+
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, ...props }, ref) => (
     <div
@@ -53,7 +71,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       {...props}
     />
   )
-)
+) as CardComponent
 Card.displayName = "Card"
 
 // ========================
@@ -270,19 +288,21 @@ CardDisplayActions.displayName = "CardDisplayActions"
 // Export
 // ========================
 
+// Attach subcomponents
+Card.Header = CardHeader
+Card.Title = CardTitle
+Card.Content = CardContent
+Card.Description = CardDescription
+Card.StatNumber = CardStatNumber
+Card.StatMeta = CardStatMeta
+Card.Split = CardSplit
+Card.SplitDivider = CardSplitDivider
+Card.SplitSection = CardSplitSection
+Card.SplitValue = CardSplitValue
+Card.SplitLabel = CardSplitLabel
+Card.DisplayBlock = CardDisplayBlock
+Card.DisplayActions = CardDisplayActions
+
 export {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-  CardStatNumber,
-  CardStatMeta,
-  CardSplit,
-  CardSplitDivider,
-  CardSplitSection,
-  CardSplitValue,
-  CardSplitLabel,
-  CardDisplayBlock,
-  CardDisplayActions,
+  Card
 }

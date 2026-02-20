@@ -14,6 +14,7 @@ import { lookupBookByISBN, CanonicalBook } from "@/lib/hybridBookLookup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { BookUserEdit } from "@/lib/bookUserEdits";
+import { Card } from "../ui/card";
 
 interface AddBookFormProps {
   onBookAdded: () => void;
@@ -149,15 +150,13 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
   const needsCommunityEditChoice = communityEdit && useCommunityEdit === null;
 
   return (
-    <div className="space-y-4">
+    <Card variant="default">
       <form onSubmit={handleSubmit}>
-  <div className="bg-card rounded-lg p-4 shadow-[0_6px_0_theme(colors.border)] mb-4">
-    <Label
-      htmlFor="isbn"
-      className="block font-bold mb-1.5"
+  
+    <Card.Header
     >
       Enter ISBN
-    </Label>
+    </Card.Header>
 
     <div className="flex gap-2.5">
       <Input
@@ -191,9 +190,8 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
     </div>
 
     <small className="block mt-2 text-xs text-muted-foreground">
-      ISBN-10 or ISBN-13 — no judgement, both welcome.
+      ISBN-10 or ISBN-13
     </small>
-  </div>
 
 </form>
 
@@ -258,6 +256,6 @@ export const AddBookForm = ({ onBookAdded }: AddBookFormProps) => {
       </DrawerContent>
     </Drawer>
 
-    </div>
+    </Card>
   );
 };
